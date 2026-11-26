@@ -2,8 +2,8 @@
 
 This directory contains the **React + Vite (JavaScript)** frontend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 09).  
-> The minimal React + Vite application skeleton, organized `src/` folder structure, verified application entry point, and global CSS foundation (`src/styles/global.css`, `src/index.css`) are configured. Future frontend libraries (**Material UI**, **Axios**, **React Router**) and feature modules will be added in upcoming commits.
+> **Current Status:** Phase 1 — Foundation (Commit 10).  
+> The minimal React + Vite application skeleton, organized `src/` folder structure, verified application entry point, global CSS foundation (`src/styles/global.css`, `src/index.css`), and foundational `MainLayout` (`src/layouts/MainLayout.jsx`, `src/layouts/MainLayout.css`) are configured. Future frontend libraries (**Material UI**, **Axios**, **React Router**) and feature modules will be added in upcoming commits.
 
 ---
 
@@ -33,7 +33,9 @@ This directory contains the **React + Vite (JavaScript)** frontend application f
 - `src/App.css` — Component-level styles specific to the root `App` welcome screen, consuming shared CSS variables.
 - `src/index.css` — Global browser defaults (box-sizing, body margin, base font/colors, `#root` minimum height) that imports `src/styles/global.css`.
 - `src/styles/global.css` — Shared `:root` CSS custom properties (colors, typography, spacing, border radius, and shadows).
-- `src/assets/`, `src/components/`, `src/layouts/`, `src/pages/`, `src/services/`, `src/styles/` — Organized source directories prepared for upcoming application growth (each currently contains a `.gitkeep` marker so Git tracks empty folders).
+- `src/layouts/MainLayout.jsx` — Reusable structural shell providing placeholder header/sidebar regions and a `{children}` main content area.
+- `src/layouts/MainLayout.css` — Responsive flexbox styles specific to `MainLayout`, consuming shared CSS variables.
+- `src/assets/`, `src/components/`, `src/layouts/`, `src/pages/`, `src/services/`, `src/styles/` — Organized source directories prepared for upcoming application growth (unused directories currently hold `.gitkeep` markers so Git tracks them).
 
 ## 5. Source Folder Organization (`src/`)
 
@@ -130,7 +132,47 @@ Define a variable in `:root` (`src/styles/global.css`) and apply it anywhere wit
 }
 ```
 
-## 8. How to Install Dependencies
+## 8. Application Layout and `children` Props
+
+### What an Application Layout Is
+
+An **application layout** is a reusable wrapper component that provides the consistent outer structure of an app—such as a header bar, sidebar area, and main content container—while letting each screen supply its own inner content.
+
+### Why Multiple Pages Share a Common Layout
+
+Sharing `MainLayout` across future pages (Customers, Motorcycles, Bookings, Invoices) avoids duplicating header/sidebar markup on every screen, keeps spacing and backgrounds uniform, and lets layout adjustments happen in a single place.
+
+### What React `children` Props Are and How `MainLayout` Uses Them
+
+In React, `children` is a built-in prop containing whatever JSX is nested inside `<MainLayout>...</MainLayout>`. `MainLayout` receives `{ children }` and renders `{children}` inside `<main className="main-layout-content">`.
+
+```jsx
+// Simple example of a layout component receiving children
+function MainLayout({ children }) {
+  return (
+    <div className="main-layout">
+      <header className="main-layout-header">Header Placeholder</header>
+      <main className="main-layout-content">{children}</main>
+    </div>
+  );
+}
+
+// Usage in App.jsx
+<MainLayout>
+  <p>Welcome to Fix-My-Ride.</p>
+</MainLayout>
+```
+
+### Difference Between Layout Components and Page Components
+
+- **Layout components** (`src/layouts/`) define the shared outer frame around screens.
+- **Page components** (`src/pages/`) define the screen-specific content rendered inside that frame's `{children}` slot.
+
+### Why Layout-Specific CSS Is Kept Separate
+
+Keeping `MainLayout.css` next to `MainLayout.jsx` separates structural page-shell styling (flex layout, header/sidebar dimensions, responsive breakpoints) from `global.css` tokens and page/component styles like `App.css`.
+
+## 9. How to Install Dependencies
 
 From the `frontend/` directory:
 
@@ -140,7 +182,7 @@ npm install
 
 *(Note: Vite 8 requires a modern Node.js version such as Node 20.19+ or 22.12+. If your default shell uses an older Node version via `nvm`, switch to a supported version first.)*
 
-## 9. How to Start the Development Server
+## 10. How to Start the Development Server
 
 ```bash
 npm run dev
@@ -148,7 +190,7 @@ npm run dev
 
 Vite will print a local URL (typically `http://localhost:5173`) where you can open the app in your browser.
 
-## 10. How to Build the Application
+## 11. How to Build the Application
 
 To generate an optimized production build inside `frontend/dist/`:
 
@@ -156,7 +198,7 @@ To generate an optimized production build inside `frontend/dist/`:
 npm run build
 ```
 
-## 11. How to Preview the Production Build
+## 12. How to Preview the Production Build
 
 To serve and test the built `dist/` files locally:
 
