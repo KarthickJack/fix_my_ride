@@ -2,8 +2,8 @@
 
 This directory will contain the **Python + FastAPI** backend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 2 — Database Foundation (Commit 23).  
-> Phase 1 FastAPI setup, PostgreSQL setup (`fix_my_ride_db`, `fix_my_ride_user`), database dependencies (`SQLAlchemy`, `psycopg[binary]`, `alembic`), and the SQLAlchemy database connection layer (`app/core/config.py`, `app/core/database.py`) are configured. SQLAlchemy ORM models and Alembic migrations will be introduced in upcoming Phase 2 commits.
+> **Current Status:** Phase 2 — Database Foundation (Commit 25).  
+> Phase 1 FastAPI setup, PostgreSQL setup (`fix_my_ride_db`, `fix_my_ride_user`), SQLAlchemy database connection (`app/core/database.py`), shared declarative `Base` (`app/db/base.py`), and Alembic migration configuration (`alembic.ini`, `alembic/env.py`) are configured. Concrete SQLAlchemy models and initial schema migrations will be introduced in upcoming commits.
 
 ---
 
@@ -347,11 +347,34 @@ Expected output when `DB_PASSWORD` is configured and PostgreSQL is running: `1`.
 - **Connection refused on port `5432`:** Ensure PostgreSQL is running (`sudo systemctl status postgresql` / `pg_isready -h localhost -p 5432`).
 - **Database does not exist:** Confirm `DB_NAME=fix_my_ride_db` exists and is owned by `fix_my_ride_user`.
 
+## 17. Database Migrations with Alembic
+
+### Key Concepts
+
+- **What Alembic is:** The schema migration tool for SQLAlchemy that tracks and applies incremental database structure changes over time.
+- **Why database migrations are necessary:** As Fix-My-Ride adds tables and columns, manual `ALTER TABLE` edits on different machines quickly fall out of sync. Versioned migration scripts make schema updates repeatable and reversible.
+- **Difference between SQLAlchemy and Alembic:** SQLAlchemy defines Python ORM models (`Base`) and executes runtime queries; Alembic compares your models against the database and manages versioned schema change scripts (`alembic/versions/`).
+- **What `alembic.ini` does:** Stores Alembic's general configuration (`script_location = %(here)s/alembic`, `prepend_sys_path = .`, and logging settings) without storing any database credentials.
+- **What `env.py` does:** Runs whenever you execute an `alembic` CLI command; it loads `Base.metadata` (`app.db.base`) and reuses the application's `DATABASE_URL` and `engine` (`app.core.database`).
+- **What `target_metadata` means:** Points Alembic to `Base.metadata` so Alembic knows which SQLAlchemy tables and columns exist in code.
+- **Offline vs. online migration modes:** **Online mode** connects directly to PostgreSQL through `engine` and executes schema updates; **offline mode** generates raw SQL scripts from `DATABASE_URL` without requiring a live database connection.
+
+### Future Migration Commands (Reference)
+
+Once ORM models exist in upcoming commits, run Alembic from `backend/` with `.venv` active:
+
+```bash
+alembic current
+alembic history
+alembic revision --autogenerate -m "create initial tables"
+alembic upgrade head
+```
+
 ---
 
 ## Upcoming Phase 2 Implementation
 
-`database.py`, `engine`, `SessionLocal`, and `get_db()` are now configured in `app/core/database.py`. The following remain **not implemented yet** for upcoming commits:
+`database.py`, `Base` (`app/db/base.py`), and Alembic (`alembic.ini`, `alembic/env.py`) are now configured. The following remain **not implemented yet** for upcoming commits:
 
-- SQLAlchemy ORM models (e.g., `Customer`, `Motorcycle`)
-- Alembic `alembic.ini` and database migrations
+- Concrete SQLAlchemy ORM models (e.g., `Customer`, `Motorcycle`)
+- First Alembic migration revision (`alembic/versions/`)
