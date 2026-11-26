@@ -4,51 +4,15 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import MainLayout from '../layouts/MainLayout.jsx';
+import DashboardPage from '../pages/Dashboard/DashboardPage.jsx';
+import CustomersPage from '../pages/Customers/CustomersPage.jsx';
+import BookingsPage from '../pages/Bookings/BookingsPage.jsx';
 
 function LayoutWrapper() {
   return (
     <MainLayout>
       <Outlet />
     </MainLayout>
-  );
-}
-
-function DashboardPlaceholder() {
-  return (
-    <Paper elevation={0} sx={{ p: 3, border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)' }}>
-      <Typography variant="h5" component="h1" gutterBottom sx={{ fontWeight: 'var(--font-weight-bold)', color: 'var(--color-text-heading)' }}>
-        Dashboard
-      </Typography>
-      <Typography variant="body1" sx={{ color: 'var(--color-text-secondary)' }}>
-        Temporary placeholder for the <strong>/dashboard</strong> route. Full Dashboard content will be built in Commit 13.
-      </Typography>
-    </Paper>
-  );
-}
-
-function CustomersPlaceholder() {
-  return (
-    <Paper elevation={0} sx={{ p: 3, border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)' }}>
-      <Typography variant="h5" component="h1" gutterBottom sx={{ fontWeight: 'var(--font-weight-bold)', color: 'var(--color-text-heading)' }}>
-        Customers
-      </Typography>
-      <Typography variant="body1" sx={{ color: 'var(--color-text-secondary)' }}>
-        Temporary placeholder for the <strong>/customers</strong> route. Full Customers page will be built in Commit 13.
-      </Typography>
-    </Paper>
-  );
-}
-
-function BookingsPlaceholder() {
-  return (
-    <Paper elevation={0} sx={{ p: 3, border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)' }}>
-      <Typography variant="h5" component="h1" gutterBottom sx={{ fontWeight: 'var(--font-weight-bold)', color: 'var(--color-text-heading)' }}>
-        Bookings
-      </Typography>
-      <Typography variant="body1" sx={{ color: 'var(--color-text-secondary)' }}>
-        Temporary placeholder for the <strong>/bookings</strong> route. Full Bookings page will be built in Commit 13.
-      </Typography>
-    </Paper>
   );
 }
 
@@ -75,9 +39,9 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route element={<LayoutWrapper />}>
-        <Route path="/dashboard" element={<DashboardPlaceholder />} />
-        <Route path="/customers" element={<CustomersPlaceholder />} />
-        <Route path="/bookings" element={<BookingsPlaceholder />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/customers" element={<CustomersPage />} />
+        <Route path="/bookings" element={<BookingsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

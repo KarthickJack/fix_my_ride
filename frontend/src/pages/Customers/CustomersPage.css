@@ -1,0 +1,44 @@
+.customers-page {
+  width: 100%;
+}
+
+.customers-page-card.MuiPaper-root {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.customers-page-title.MuiTypography-root {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-heading);
+  margin-bottom: var(--spacing-sm);
+}
+
+.customers-page-description.MuiTypography-root {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.customers-page-empty-state {
+  background-color: var(--color-bg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+}
+
+.customers-page-empty-title.MuiTypography-root {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.customers-page-empty-text.MuiTypography-root {
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 768px) {
+  .customers-page-card.MuiPaper-root {
+    padding: var(--spacing-md);
+  }
+}

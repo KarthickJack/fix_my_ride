@@ -1,0 +1,49 @@
+.dashboard-page {
+  width: 100%;
+}
+
+.dashboard-page-card.MuiPaper-root {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.dashboard-page-title.MuiTypography-root {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-heading);
+  margin-bottom: var(--spacing-sm);
+}
+
+.dashboard-page-description.MuiTypography-root {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.dashboard-page-welcome.MuiTypography-root {
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.dashboard-page-placeholder {
+  background-color: var(--color-bg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+}
+
+.dashboard-page-placeholder-title.MuiTypography-root {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-heading);
+  margin-bottom: var(--spacing-sm);
+}
+
+.dashboard-page-placeholder-text.MuiTypography-root {
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 768px) {
+  .dashboard-page-card.MuiPaper-root {
+    padding: var(--spacing-md);
+  }
+}

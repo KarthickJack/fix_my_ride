@@ -2,8 +2,8 @@
 
 This directory contains the **React + Vite (JavaScript)** frontend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 12).  
-> The React + Vite application skeleton, organized `src/` folder structure, global CSS foundation, `MainLayout`, Material UI-based `Header` and `Sidebar`, and client-side routing (`react-router-dom` via `src/routes/AppRoutes.jsx`) are configured. Future frontend libraries (**Axios**) and actual page modules will be added in upcoming commits.
+> **Current Status:** Phase 1 — Foundation (Commit 13).  
+> The React + Vite application skeleton, organized `src/` folder structure, global CSS foundation, `MainLayout`, Material UI-based `Header` and `Sidebar`, client-side routing (`react-router-dom`), and initial application pages (`DashboardPage`, `CustomersPage`, `BookingsPage`) are configured. Future frontend libraries (**Axios**) and actual business features will be added in upcoming commits.
 
 ---
 
@@ -30,7 +30,10 @@ This directory contains the **React + Vite (JavaScript)** frontend application f
 - `public/favicon.svg` — Static icon file served directly at `/favicon.svg`.
 - `src/main.jsx` — The JavaScript entry point that finds `#root` in `index.html` and renders the `<App />` component inside `<StrictMode>`.
 - `src/App.jsx` — The root React component wrapping `AppRoutes` inside a single `BrowserRouter`.
-- `src/routes/AppRoutes.jsx` — Route configuration mapping `/`, `/dashboard`, `/customers`, `/bookings`, and `*` to placeholder views wrapped inside `MainLayout` via `Outlet`.
+- `src/routes/AppRoutes.jsx` — Route configuration mapping `/`, `/dashboard`, `/customers`, `/bookings`, and `*` to page components wrapped inside `MainLayout` via `Outlet`.
+- `src/pages/Dashboard/DashboardPage.jsx` & `DashboardPage.css` — Initial Dashboard page displaying the overview, welcome message, and statistics placeholder.
+- `src/pages/Customers/CustomersPage.jsx` & `CustomersPage.css` — Initial Customers page displaying the customer management overview and empty state.
+- `src/pages/Bookings/BookingsPage.jsx` & `BookingsPage.css` — Initial Bookings page displaying the service bookings overview and empty state.
 - `src/App.css` — Component-level styles specific to the root `App` welcome screen, consuming shared CSS variables.
 - `src/index.css` — Global browser defaults (box-sizing, body margin, base font/colors, `#root` minimum height) that imports `src/styles/global.css`.
 - `src/styles/global.css` — Shared `:root` CSS custom properties (colors, typography, spacing, border radius, and shadows).
@@ -223,9 +226,30 @@ In a traditional multi-page website, clicking a link asks the server for a brand
 
 ### How URL Changes Update Displayed Components
 
-When a user clicks **Customers** in `Sidebar`, `NavLink` updates the URL to `/customers`. `BrowserRouter` notifies `Routes`, which swaps the `<Outlet />` content inside `MainLayout` from the Dashboard placeholder to the Customers placeholder while keeping `Header` and `Sidebar` mounted.
+When a user clicks **Customers** in `Sidebar`, `NavLink` updates the URL to `/customers`. `BrowserRouter` notifies `Routes`, which swaps the `<Outlet />` content inside `MainLayout` from `DashboardPage` to `CustomersPage` while keeping `Header` and `Sidebar` mounted.
 
-## 11. How to Install Dependencies
+## 11. Initial Application Pages
+
+### What a Page Component Is and Why Pages Use Individual Folders
+
+A **page component** represents a complete screen linked to a specific URL route (such as `/dashboard`, `/customers`, or `/bookings`). Placing each page in its own folder (`src/pages/Dashboard/`, `src/pages/Customers/`, `src/pages/Bookings/`) keeps the component JSX and its page-specific CSS neatly co-located as pages grow in upcoming commits.
+
+### Difference Between Pages and Reusable Components
+
+- **Reusable components (`src/components/`):** Shared UI pieces like `Header` and `Sidebar` (or future buttons and tables) reused across screens.
+- **Page components (`src/pages/`):** Top-level screen views rendered inside `MainLayout`'s `<Outlet />` for a single route.
+
+### Initial Pages Implemented
+
+- **Dashboard (`src/pages/Dashboard/DashboardPage.jsx`):** Displays the Dashboard heading, Fix-My-Ride description, welcome message, and a clear placeholder section where workshop statistics will be added later.
+- **Customers (`src/pages/Customers/CustomersPage.jsx`):** Displays the Customers heading, customer management description, and an empty state (*"No customer records available yet."*) noting future registration/management features.
+- **Bookings (`src/pages/Bookings/BookingsPage.jsx`):** Displays the Bookings heading, motorcycle service booking description, and an empty state (*"No service bookings available yet."*) noting future scheduling features.
+
+### How `AppRoutes` Connects URLs and How Page CSS Is Organized
+
+`src/routes/AppRoutes.jsx` imports `DashboardPage`, `CustomersPage`, and `BookingsPage` and maps `/dashboard`, `/customers`, and `/bookings` inside `LayoutWrapper` (`MainLayout` + `Outlet`). Each page imports its own stylesheet (`DashboardPage.css`, `CustomersPage.css`, `BookingsPage.css`) powered by `global.css` design variables.
+
+## 12. How to Install Dependencies
 
 From the `frontend/` directory:
 
@@ -235,7 +259,7 @@ npm install
 
 *(Note: Vite 8 requires a modern Node.js version such as Node 20.19+ or 22.12+. If your default shell uses an older Node version via `nvm`, switch to a supported version first.)*
 
-## 12. How to Start the Development Server
+## 13. How to Start the Development Server
 
 ```bash
 npm run dev
@@ -243,7 +267,7 @@ npm run dev
 
 Vite will print a local URL (typically `http://localhost:5173`) where you can open the app in your browser.
 
-## 13. How to Build the Application
+## 14. How to Build the Application
 
 To generate an optimized production build inside `frontend/dist/`:
 
@@ -251,7 +275,7 @@ To generate an optimized production build inside `frontend/dist/`:
 npm run build
 ```
 
-## 14. How to Preview the Production Build
+## 15. How to Preview the Production Build
 
 To serve and test the built `dist/` files locally:
 
