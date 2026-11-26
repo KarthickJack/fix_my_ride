@@ -2,8 +2,8 @@
 
 This directory will contain the **Python + FastAPI** backend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 19).  
-> The Python virtual environment (`.venv`), `requirements.txt`, FastAPI application (`app/main.py`), health check router (`GET /health`), Pydantic Settings configuration (`app/core/config.py`), `.env.example`, and CORS middleware are configured. Database connections, authentication, and frontend Axios integration will be introduced in upcoming commits.
+> **Current Status:** Phase 2 — Database Foundation (Commit 21).  
+> Phase 1 FastAPI setup (`app/main.py`, `GET /health`, Pydantic Settings, CORS) is complete, and the local PostgreSQL database (`fix_my_ride_db`) and application role (`fix_my_ride_user`) are set up. Python database drivers, SQLAlchemy ORM, and database connections will be introduced in upcoming Phase 2 commits.
 
 ---
 
@@ -210,11 +210,76 @@ Because the React + Vite frontend runs at `http://localhost:5173` and the FastAP
 - **`allow_headers=["*"]`:** Allows standard and custom HTTP request headers (such as `Content-Type`).
 - **`allow_credentials=False`:** Keeps cookie/credential sharing disabled because authentication is not implemented yet.
 
+## 14. PostgreSQL Database Setup
+
+### Key Concepts
+
+- **What PostgreSQL is:** An open-source, relational database management system (RDBMS) that stores structured application data reliably on disk.
+- **Why Fix-My-Ride needs a database:** In-memory variables reset whenever the server restarts. PostgreSQL provides persistent storage for customers, motorcycles, bookings, inspections, invoices, and payments.
+- **Database server vs. database:** The **PostgreSQL server** is the running background service (`postgresql.service`) managing connections and storage, while a **database** (`fix_my_ride_db`) is one isolated logical collection of schemas and tables hosted inside that server.
+- **What a database user/role is:** A **role** (`fix_my_ride_user`) is an identity with login privileges and permissions used by Fix-My-Ride to authenticate against PostgreSQL.
+- **What a database owner is:** Assigning `OWNER fix_my_ride_user` gives our application role full control over `fix_my_ride_db` (creating tables and reading/writing data inside it) without needing cluster-wide superuser privileges.
+- **Why we created a separate application user:** Using a dedicated role instead of the `postgres` superuser limits blast radius and follows least-privilege security practice.
+- **What port `5432` is:** The default TCP port where PostgreSQL listens for incoming connections on `localhost`.
+
+### Local Setup Values
+
+- **Host:** `localhost`
+- **Port:** `5432`
+- **Database:** `fix_my_ride_db`
+- **Application User:** `fix_my_ride_user`
+
+*(Never store or document the actual database password in README files or Git.)*
+
+### Installing, Starting, and Verifying PostgreSQL on Ubuntu
+
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+sudo systemctl status postgresql
+psql --version
+pg_isready
+```
+
+### Creating the Role and Database
+
+```bash
+sudo -u postgres psql
+```
+
+```sql
+CREATE ROLE fix_my_ride_user WITH LOGIN;
+\password fix_my_ride_user
+CREATE DATABASE fix_my_ride_db OWNER fix_my_ride_user;
+\q
+```
+
+### Connecting, Inspecting, and Exiting `psql`
+
+```bash
+psql -h localhost -p 5432 -U fix_my_ride_user -d fix_my_ride_db -W
+```
+
+Useful inspection commands inside the PostgreSQL shell:
+
+```sql
+SELECT current_database(), current_user;
+SELECT current_schema();
+SELECT version();
+\dt
+\l
+\q
+```
+
+Use `\q` to exit the PostgreSQL shell cleanly.
+
 ---
 
 ## Planned Future Technologies
 
-The following technologies are **not installed or configured yet** and will be introduced in future commits:
+The following technologies are **not installed or configured yet** and will be introduced in upcoming Phase 2 commits:
 
 - **SQLAlchemy** for Object-Relational Mapping (ORM)
-- **PostgreSQL** drivers and database connections
+- **PostgreSQL Python driver** and database connection setup in FastAPI
