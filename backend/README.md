@@ -2,8 +2,8 @@
 
 This directory will contain the **Python + FastAPI** backend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 15).  
-> The isolated Python virtual environment (`.venv`) and initial `requirements.txt` (`fastapi`, `uvicorn[standard]`) are configured. No FastAPI application (`main.py`), API routes, or database connections exist yet—those will begin in Commit 16.
+> **Current Status:** Phase 1 — Foundation (Commit 16).  
+> The isolated Python virtual environment (`.venv`), `requirements.txt`, and the minimal FastAPI application (`app/main.py`) with a root `/` endpoint are configured. API feature routes, CORS, authentication, and database connections will be introduced in upcoming commits.
 
 ---
 
@@ -69,6 +69,41 @@ When you finish working on the backend:
 ```bash
 deactivate
 ```
+
+## 9. Running the Backend Application
+
+### Key Concepts
+
+- **What `main.py` does:** `backend/app/main.py` is the entry point of the backend server. It creates the FastAPI application and defines the initial `/` route.
+- **What a FastAPI application instance is:** `app = FastAPI(...)` creates the central application object that holds your API metadata (title, description, version) and registers all endpoints.
+- **What an endpoint is:** An **endpoint** is a specific URL path (like `/`) on the server that listens for requests and sends back a response.
+- **What HTTP GET means:** `GET` is the HTTP method used to **read** or retrieve information from a server without modifying stored data. Opening a URL in a browser sends a `GET` request.
+- **What JSON is:** **JSON** (*JavaScript Object Notation*) is a lightweight text format made of key–value pairs (like `{"message": "Welcome to Fix-My-Ride API", "status": "running"}`) that both Python backends and JavaScript/React frontends understand easily.
+- **What Uvicorn does:** Uvicorn runs the FastAPI application and listens for incoming HTTP requests.
+- **Why we use port `8000`:** Port `8000` is Uvicorn's standard default development port, which keeps it separate from the React + Vite frontend running on port `5173`.
+
+### Start the Server
+
+```bash
+cd backend
+
+source .venv/bin/activate
+
+uvicorn app.main:app --reload
+```
+
+### Understanding the `uvicorn` Command
+
+- **`uvicorn`:** The ASGI web server executing your Python app.
+- **`app.main`:** The Python module path (`app/main.py` inside `backend/`).
+- **`app`:** The FastAPI instance variable created inside `app/main.py` (`app = FastAPI(...)`).
+- **`--reload`:** Watches your Python files and automatically restarts the server whenever you save code changes during development.
+
+Once started, open `http://127.0.0.1:8000/`, `http://127.0.0.1:8000/docs` (Swagger UI), or `http://127.0.0.1:8000/redoc` in your browser.
+
+### Stop the Server
+
+Press `Ctrl + C` in the terminal running Uvicorn to stop the development server cleanly.
 
 ---
 
