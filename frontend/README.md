@@ -2,8 +2,8 @@
 
 This directory contains the **React + Vite (JavaScript)** frontend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 14).  
-> The React + Vite application skeleton, organized `src/` folder structure, global CSS foundation, `MainLayout`, Material UI-based `Header` and `Sidebar`, client-side routing (`react-router-dom`), initial application pages (`DashboardPage`, `CustomersPage`, `BookingsPage`), and verified sidebar navigation integration are configured. Future frontend libraries (**Axios**) and actual business features will be added in upcoming commits.
+> **Current Status:** Phase 1 — Foundation (Commit 20).  
+> All Phase 1 foundation components are configured: React + Vite, organized `src/` architecture, global CSS, `MainLayout`, Material UI `Header` and `Sidebar`, React Router navigation, initial pages, and Axios integration connecting `DashboardPage` to the FastAPI `/health` endpoint. Business modules (customers, motorcycles, bookings, database) begin in Phase 2.
 
 ---
 
@@ -24,16 +24,19 @@ This directory contains the **React + Vite (JavaScript)** frontend application f
 ## 4. What Each File Does
 
 - `index.html` — The single HTML page served to the browser. Contains `<div id="root"></div>` where React mounts and loads `/src/main.jsx`.
-- `package.json` — Lists project metadata, dependencies (`react`, `react-dom`, `react-router-dom`, `@mui/material`, `@mui/icons-material`, `@emotion/react`, `@emotion/styled`), devDependencies (`vite`, `@vitejs/plugin-react`), and npm scripts (`dev`, `build`, `preview`).
+- `package.json` — Lists project metadata, dependencies (`react`, `react-dom`, `react-router-dom`, `axios`, `@mui/material`, `@mui/icons-material`, `@emotion/react`, `@emotion/styled`), devDependencies (`vite`, `@vitejs/plugin-react`), and npm scripts (`dev`, `build`, `preview`).
 - `package-lock.json` — Records exact installed package versions so everyone gets identical installs.
+- `.env.example` — Safe template declaring `VITE_API_BASE_URL=http://localhost:8000` (copy to local `.env` if customizing).
 - `vite.config.js` — Vite configuration enabling the official React plugin (`@vitejs/plugin-react`).
 - `public/favicon.svg` — Static icon file served directly at `/favicon.svg`.
 - `src/main.jsx` — The JavaScript entry point that finds `#root` in `index.html` and renders the `<App />` component inside `<StrictMode>`.
 - `src/App.jsx` — The root React component wrapping `AppRoutes` inside a single `BrowserRouter`.
 - `src/routes/AppRoutes.jsx` — Route configuration mapping `/`, `/dashboard`, `/customers`, `/bookings`, and `*` to page components wrapped inside `MainLayout` via `Outlet`.
-- `src/pages/Dashboard/DashboardPage.jsx` & `DashboardPage.css` — Initial Dashboard page displaying the overview, welcome message, and statistics placeholder.
+- `src/pages/Dashboard/DashboardPage.jsx` & `DashboardPage.css` — Initial Dashboard page calling `getHealthStatus()` via `healthService.js` to display live backend connection status (`loading`, `connected`, `disconnected` with Retry) plus the statistics placeholder.
 - `src/pages/Customers/CustomersPage.jsx` & `CustomersPage.css` — Initial Customers page displaying the customer management overview and empty state.
 - `src/pages/Bookings/BookingsPage.jsx` & `BookingsPage.css` — Initial Bookings page displaying the service bookings overview and empty state.
+- `src/services/api.js` — Shared Axios instance configured with `VITE_API_BASE_URL` (defaulting to `http://localhost:8000`) and a `10000ms` timeout.
+- `src/services/healthService.js` — API service exporting `getHealthStatus()` to call `GET /health`.
 - `src/App.css` — Component-level styles specific to the root `App` welcome screen, consuming shared CSS variables.
 - `src/index.css` — Global browser defaults (box-sizing, body margin, base font/colors, `#root` minimum height) that imports `src/styles/global.css`.
 - `src/styles/global.css` — Shared `:root` CSS custom properties (colors, typography, spacing, border radius, and shadows).
@@ -269,7 +272,51 @@ Clicking a sidebar item updates the browser URL via the History API without relo
 1. Navigate across **Dashboard** → **Customers** → **Bookings**, then click the browser **Back** and **Forward** buttons to confirm URLs, page views, and active sidebar highlights stay synchronized.
 2. Press `Tab` to verify clear `:focus-visible` outlines on the header toggle button, sidebar links, and mobile close button, and confirm closed mobile drawer links remain hidden from keyboard focus (`visibility: hidden`).
 
-## 13. How to Install Dependencies
+## 13. Frontend–Backend Integration with Axios
+
+### What Axios Is and Why We Use an Axios Instance
+
+**Axios** is a promise-based HTTP client used by React to send requests to the FastAPI backend and receive JSON responses.
+
+Instead of importing raw `axios` and repeating `http://localhost:8000` in every file, `src/services/api.js` creates one configured `axios.create()` instance with a shared `baseURL` and `timeout: 10000`.
+
+### What an API Service Is
+
+An **API service** (`src/services/healthService.js`) groups endpoint calls into clean functions (such as `getHealthStatus()` calling `api.get('/health')` and returning `response.data`). UI components call `getHealthStatus()` instead of embedding HTTP URLs directly in JSX.
+
+### How Frontend Environment Variables Work in Vite
+
+Vite only exposes environment variables prefixed with **`VITE_`** to browser JavaScript via `import.meta.env` (for example, `import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'`). Because frontend bundles run inside users' browsers, **never place passwords, tokens, or secrets** in `VITE_*` variables or `frontend/.env.example`.
+
+### How Frontend and FastAPI Communicate & How to Start Both Applications
+
+Both the backend and frontend servers must run **simultaneously** in separate terminals. Always open the frontend at **`http://localhost:5173`** so its browser origin matches the backend's configured `FRONTEND_URL` CORS origin.
+
+#### Terminal 1 — Backend
+
+```bash
+cd backend
+
+source .venv/bin/activate
+
+uvicorn app.main:app --reload
+```
+
+#### Terminal 2 — Frontend
+
+```bash
+cd frontend
+
+npm run dev
+```
+
+### How to Test the Backend Connection
+
+1. Start both Terminal 1 (Backend on `127.0.0.1:8000`) and Terminal 2 (Frontend on `http://localhost:5173`).
+2. Open `http://localhost:5173` — `DashboardPage` calls `GET /health` and displays **Backend: Connected**, **Application: Fix-My-Ride API**, **Status: healthy**, and **Message: Backend is running successfully**.
+3. Stop the backend server (`Ctrl + C`) and click **Retry** (or refresh) to confirm the disconnected error message and **Retry** button appear, then restart the backend and click **Retry** to verify recovery.
+
+## 14. How to Install Dependencies
 
 From the `frontend/` directory:
 
@@ -279,7 +326,7 @@ npm install
 
 *(Note: Vite 8 requires a modern Node.js version such as Node 20.19+ or 22.12+. If your default shell uses an older Node version via `nvm`, switch to a supported version first.)*
 
-## 14. How to Start the Development Server
+## 15. How to Start the Development Server
 
 ```bash
 npm run dev
@@ -287,7 +334,7 @@ npm run dev
 
 Vite will print a local URL (typically `http://localhost:5173`) where you can open the app in your browser.
 
-## 15. How to Build the Application
+## 16. How to Build the Application
 
 To generate an optimized production build inside `frontend/dist/`:
 
@@ -295,7 +342,7 @@ To generate an optimized production build inside `frontend/dist/`:
 npm run build
 ```
 
-## 16. How to Preview the Production Build
+## 17. How to Preview the Production Build
 
 To serve and test the built `dist/` files locally:
 
@@ -305,8 +352,6 @@ npm run preview
 
 ---
 
-## Planned Future Technologies
+## Phase 1 Foundation Complete
 
-The following technology is **not installed yet** and will be introduced in future commits:
-
-- **Axios** for communicating with the FastAPI backend API
+All planned Phase 1 foundation libraries (**React**, **Vite**, **Material UI**, **React Router**, and **Axios**) are now installed and integrated. Business modules and PostgreSQL/SQLAlchemy database integration begin in Phase 2.
