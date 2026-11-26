@@ -2,8 +2,8 @@
 
 This directory will contain the **Python + FastAPI** backend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 2 — Database Foundation (Commit 29).  
-> Phase 1 FastAPI setup, PostgreSQL setup (`fix_my_ride_db`, `fix_my_ride_user`), SQLAlchemy connection, `Customer` ORM model, initial Alembic migration (`customers` table), Pydantic Customer schemas (`app/schemas/customer.py`), and Customer service functions (`app/services/customer_service.py`) are configured. Customer HTTP API routes will be introduced in Commit 30.
+> **Current Status:** Phase 2 — Database Foundation (Commit 30).  
+> Phase 2 Customer foundation is complete end-to-end: PostgreSQL `customers` table (Alembic migration `402f1c589c46`), SQLAlchemy `Customer` model, Pydantic schemas, service layer, and Customer HTTP API endpoints (`POST /api/customers/`, `GET /api/customers/`, `GET /api/customers/{customer_id}`) are configured and verified. Authentication, authorization, update/delete endpoints, and frontend Customer UI integration remain upcoming work.
 
 ---
 
@@ -442,10 +442,68 @@ Database operations for customers live in `backend/app/services/customer_service
 
 Read functions never call `db.commit()`, and service functions never raise `HTTPException`.
 
+## 22. Customer HTTP API
+
+Customer HTTP routes live in `backend/app/api/routes/customers.py` and are registered in `backend/app/main.py` with `prefix="/api/customers"` and `tags=["Customers"]`. Each route injects a per-request SQLAlchemy `Session` using `Depends(get_db)` and delegates database work to `customer_service.py`.
+
+> **Development-Stage Notice:** This API is for local development learning only and is **not production-ready**. Authentication, authorization, rate limiting, and production security hardening remain future work.
+
+### Available Endpoints
+
+| Method | Path | Success Status | Error Statuses | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `POST` | `/api/customers/` | `201 Created` | `409 Conflict`, `422 Unprocessable Entity` | Create a new customer |
+| `GET` | `/api/customers/` | `200 OK` | — | List all customers ordered by ID |
+| `GET` | `/api/customers/{customer_id}` | `200 OK` | `404 Not Found`, `422 Unprocessable Entity` | Retrieve one customer by ID |
+
+### Example Request Payload (`POST /api/customers/`)
+
+```json
+{
+  "full_name": "Arjun Mehta",
+  "phone_number": "+919876543210",
+  "email": "arjun@example.com",
+  "address": "42 Workshop Lane, Bengaluru"
+}
+```
+
+### Example Success Response (`201 Created` / `200 OK`)
+
+```json
+{
+  "full_name": "Arjun Mehta",
+  "phone_number": "+919876543210",
+  "email": "arjun@example.com",
+  "address": "42 Workshop Lane, Bengaluru",
+  "id": 1,
+  "created_at": "2026-11-27T03:30:00Z",
+  "updated_at": "2026-11-27T03:30:00Z"
+}
+```
+
+### Expected Error Responses
+
+- **`409 Conflict`:** `{"detail": "A customer with this phone number already exists."}` (or email)
+- **`404 Not Found`:** `{"detail": "Customer not found"}`
+- **`422 Unprocessable Entity`:** FastAPI/Pydantic validation details when required fields are missing, invalid email is sent, lengths exceed limits, or `{customer_id}` is not an integer.
+
+### Testing via Swagger UI or `curl`
+
+1. Start Uvicorn (`uvicorn app.main:app --reload`) and open `http://127.0.0.1:8000/docs` to test endpoints interactively under the **Customers** tag.
+2. Or test with `curl`:
+   ```bash
+   curl -i -X POST http://127.0.0.1:8000/api/customers/ \
+     -H "Content-Type: application/json" \
+     -d '{"full_name":"Test Rider","phone_number":"+910000009999","email":"test.rider@example.com"}'
+
+   curl -i http://127.0.0.1:8000/api/customers/
+   curl -i http://127.0.0.1:8000/api/customers/1
+   ```
+
 ---
 
-## Upcoming Phase 2 Implementation
+## Next Steps (Beyond Phase 2 Customer Foundation)
 
-The `customers` table, Pydantic Customer schemas, and Customer service layer are now ready. The following remain **not implemented yet** for upcoming commits:
-
-- Customer HTTP API routes (`app/api/routes/`) and registration in `app/main.py` (Commit 30)
+- Customer update/delete endpoints, pagination, and filtering
+- Authentication, authorization, rate limiting, and production security hardening
+- Additional domain modules (Motorcycles, Service Bookings, Inspections, Invoices) and frontend integration
