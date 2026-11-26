@@ -3,43 +3,43 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: var(--spacing-lg);
 }
 
 .welcome-card {
   max-width: 520px;
   width: 100%;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 40px 32px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 40px var(--spacing-xl);
   text-align: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-md);
 }
 
 .welcome-title {
-  margin: 0 0 8px;
+  margin: 0 0 var(--spacing-sm);
   font-size: 2rem;
-  font-weight: 700;
-  color: #111827;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-heading);
 }
 
 .welcome-subtitle {
-  margin: 0 0 24px;
+  margin: 0 0 var(--spacing-lg);
   font-size: 1.05rem;
-  font-weight: 500;
-  color: #2563eb;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
 }
 
 .welcome-message {
-  margin: 0 0 8px;
+  margin: 0 0 var(--spacing-sm);
   font-size: 1.125rem;
-  font-weight: 600;
-  color: #1f2937;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
 }
 
 .welcome-description {
   margin: 0;
   font-size: 1rem;
-  color: #4b5563;
+  color: var(--color-text-secondary);
 }

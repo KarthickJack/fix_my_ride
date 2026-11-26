@@ -2,8 +2,8 @@
 
 This directory contains the **React + Vite (JavaScript)** frontend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 08).  
-> The minimal React + Vite application skeleton, organized `src/` folder structure (`assets/`, `components/`, `layouts/`, `pages/`, `services/`, `styles/`), and clearly separated application entry point (`index.html`, `main.jsx`, `App.jsx`) are verified and configured. Future frontend libraries (**Material UI**, **Axios**, **React Router**) and feature modules will be added in upcoming commits.
+> **Current Status:** Phase 1 — Foundation (Commit 09).  
+> The minimal React + Vite application skeleton, organized `src/` folder structure, verified application entry point, and global CSS foundation (`src/styles/global.css`, `src/index.css`) are configured. Future frontend libraries (**Material UI**, **Axios**, **React Router**) and feature modules will be added in upcoming commits.
 
 ---
 
@@ -30,8 +30,9 @@ This directory contains the **React + Vite (JavaScript)** frontend application f
 - `public/favicon.svg` — Static icon file served directly at `/favicon.svg`.
 - `src/main.jsx` — The JavaScript entry point that finds `#root` in `index.html` and renders the `<App />` component inside `<StrictMode>`.
 - `src/App.jsx` — The root React component currently displaying the minimal Fix-My-Ride welcome screen.
-- `src/App.css` — Component-level styles for the welcome page layout and card.
-- `src/index.css` — Minimal global CSS rules (box-sizing, body margin, default font, and background color).
+- `src/App.css` — Component-level styles specific to the root `App` welcome screen, consuming shared CSS variables.
+- `src/index.css` — Global browser defaults (box-sizing, body margin, base font/colors, `#root` minimum height) that imports `src/styles/global.css`.
+- `src/styles/global.css` — Shared `:root` CSS custom properties (colors, typography, spacing, border radius, and shadows).
 - `src/assets/`, `src/components/`, `src/layouts/`, `src/pages/`, `src/services/`, `src/styles/` — Organized source directories prepared for upcoming application growth (each currently contains a `.gitkeep` marker so Git tracks empty folders).
 
 ## 5. Source Folder Organization (`src/`)
@@ -85,7 +86,51 @@ Separating API communication into `src/services/` keeps React components focused
 
 `index.html` provides the `#root` anchor and loads `main.jsx`; `main.jsx` initializes React and mounts `<App />` into `#root`; and `App.jsx` supplies the UI rendered to the user.
 
-## 7. How to Install Dependencies
+## 7. Global CSS and Design Variables
+
+### What Global CSS Is
+
+**Global CSS** defines shared styling rules and design values that apply across the whole application (such as resetting browser margins, setting default typography, and defining brand colors) instead of repeating them inside every component.
+
+### What CSS Custom Properties Are
+
+**CSS custom properties** (CSS variables) are reusable named values declared inside `:root` (for example, `--color-primary: #2563eb;`). Because `:root` targets the top-level HTML element, those variables are available throughout the entire application.
+
+### Why Design Variables Are Useful
+
+- **Consistency:** Every screen uses the exact same colors, spacing, and border radii.
+- **Easy maintenance:** Updating a brand color or spacing token in `src/styles/global.css` updates every rule that references it.
+- **Readability:** Names like `var(--color-surface)` or `var(--spacing-lg)` explain intent better than raw hex or pixel numbers.
+
+### Difference Between `global.css`, `index.css`, and `App.css`
+
+- **`src/styles/global.css`:** Stores shared `:root` design tokens (colors, typography, spacing, border radius, shadows) with no element selectors.
+- **`src/index.css`:** Imports `./styles/global.css` and sets browser-wide resets and defaults (`box-sizing`, `body` font/colors/margin, `#root` min-height).
+- **`src/App.css`:** Styles only the root `App.jsx` welcome screen while referencing variables from `global.css`.
+
+### Basic CSS Inheritance
+
+In CSS, properties like `font-family`, `color`, and `line-height` set on `body` automatically **inherit** down to child elements inside `#root`, so headings and paragraphs share consistent defaults unless a more specific rule overrides them.
+
+### Using a CSS Variable with `var()`
+
+Define a variable in `:root` (`src/styles/global.css`) and apply it anywhere with `var(...)`:
+
+```css
+/* In src/styles/global.css */
+:root {
+  --color-primary: #2563eb;
+  --spacing-lg: 24px;
+}
+
+/* In a component stylesheet */
+.welcome-subtitle {
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-primary);
+}
+```
+
+## 8. How to Install Dependencies
 
 From the `frontend/` directory:
 
@@ -95,7 +140,7 @@ npm install
 
 *(Note: Vite 8 requires a modern Node.js version such as Node 20.19+ or 22.12+. If your default shell uses an older Node version via `nvm`, switch to a supported version first.)*
 
-## 8. How to Start the Development Server
+## 9. How to Start the Development Server
 
 ```bash
 npm run dev
@@ -103,7 +148,7 @@ npm run dev
 
 Vite will print a local URL (typically `http://localhost:5173`) where you can open the app in your browser.
 
-## 9. How to Build the Application
+## 10. How to Build the Application
 
 To generate an optimized production build inside `frontend/dist/`:
 
@@ -111,7 +156,7 @@ To generate an optimized production build inside `frontend/dist/`:
 npm run build
 ```
 
-## 10. How to Preview the Production Build
+## 11. How to Preview the Production Build
 
 To serve and test the built `dist/` files locally:
 
