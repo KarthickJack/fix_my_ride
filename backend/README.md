@@ -2,8 +2,8 @@
 
 This directory will contain the **Python + FastAPI** backend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 2 — Database Foundation (Commit 28).  
-> Phase 1 FastAPI setup, PostgreSQL setup (`fix_my_ride_db`, `fix_my_ride_user`), SQLAlchemy connection, `Customer` ORM model, initial Alembic migration creating the `customers` table, and Pydantic Customer schemas (`app/schemas/customer.py`) are configured. Customer service functions and API routes will be introduced in upcoming commits.
+> **Current Status:** Phase 2 — Database Foundation (Commit 29).  
+> Phase 1 FastAPI setup, PostgreSQL setup (`fix_my_ride_db`, `fix_my_ride_user`), SQLAlchemy connection, `Customer` ORM model, initial Alembic migration (`customers` table), Pydantic Customer schemas (`app/schemas/customer.py`), and Customer service functions (`app/services/customer_service.py`) are configured. Customer HTTP API routes will be introduced in Commit 30.
 
 ---
 
@@ -431,10 +431,21 @@ Pydantic 2.x data validation and serialization schemas live in `backend/app/sche
 - **`CustomerUpdate`:** Makes all four editable fields optional using the same length constraints so partial updates (one or more fields) work without allowing `id` or timestamp changes.
 - **`CustomerResponse`:** Inherits `CustomerBase`, adds `id`, `created_at`, and `updated_at`, and enables `model_config = ConfigDict(from_attributes=True)` so responses can be built directly from SQLAlchemy `Customer` ORM instances.
 
+## 21. Customer Service Layer
+
+Database operations for customers live in `backend/app/services/customer_service.py` (exported via `backend/app/services/__init__.py`), keeping SQLAlchemy queries separate from HTTP routes:
+
+- **`create_customer(db, customer_data)`:** Converts `CustomerCreate` via `.model_dump()`, creates a `Customer` ORM instance, stages it with `db.add()`, commits with `db.commit()`, reloads database-generated fields (`id`, `created_at`, `updated_at`) via `db.refresh()`, and returns the `Customer` instance. On duplicate `phone_number` or `email` (`IntegrityError`), it calls `db.rollback()` so the session remains usable and raises a clear `ValueError` for the future API layer to translate.
+- **`get_customer_by_id(db, customer_id)`:** Queries `select(Customer).where(Customer.id == customer_id)` and returns `Customer` or `None`.
+- **`get_customer_by_phone(db, phone_number)`:** Queries `select(Customer).where(Customer.phone_number == phone_number)` and returns `Customer` or `None`.
+- **`get_customers(db)`:** Queries `select(Customer).order_by(Customer.id.asc())` and returns `list[Customer]`.
+
+Read functions never call `db.commit()`, and service functions never raise `HTTPException`.
+
 ---
 
 ## Upcoming Phase 2 Implementation
 
-The `customers` table and Pydantic Customer schemas are now ready. The following remain **not implemented yet** for upcoming commits:
+The `customers` table, Pydantic Customer schemas, and Customer service layer are now ready. The following remain **not implemented yet** for upcoming commits:
 
-- Customer service functions (`app/services/`) and API routes (`app/api/routes/`)
+- Customer HTTP API routes (`app/api/routes/`) and registration in `app/main.py` (Commit 30)
