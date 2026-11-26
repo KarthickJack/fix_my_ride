@@ -2,8 +2,8 @@
 
 This directory will contain the **Python + FastAPI** backend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 2 — Database Foundation (Commit 25).  
-> Phase 1 FastAPI setup, PostgreSQL setup (`fix_my_ride_db`, `fix_my_ride_user`), SQLAlchemy database connection (`app/core/database.py`), shared declarative `Base` (`app/db/base.py`), and Alembic migration configuration (`alembic.ini`, `alembic/env.py`) are configured. Concrete SQLAlchemy models and initial schema migrations will be introduced in upcoming commits.
+> **Current Status:** Phase 2 — Database Foundation (Commit 26).  
+> Phase 1 FastAPI setup, PostgreSQL setup (`fix_my_ride_db`, `fix_my_ride_user`), SQLAlchemy database connection (`app/core/database.py`), shared declarative `Base` (`app/db/base.py`), Alembic configuration (`alembic.ini`, `alembic/env.py`), and the `Customer` ORM model (`app/db/models/customer.py`) are configured. Generating and applying the first Alembic migration to create the `customers` table in PostgreSQL begins in Commit 27.
 
 ---
 
@@ -370,11 +370,30 @@ alembic revision --autogenerate -m "create initial tables"
 alembic upgrade head
 ```
 
+## 18. Customer Database Model
+
+The first SQLAlchemy ORM model is defined in `backend/app/db/models/customer.py` and exposed via `backend/app/db/models/__init__.py` (imported by `alembic/env.py` so Alembic detects it on `Base.metadata`).
+
+- **Class:** `Customer` (inheriting from `Base` in `app.db.base`)
+- **Table name:** `customers` *(defined in Python metadata only—not created in PostgreSQL until a migration is generated and applied in Commit 27)*
+
+### Fields
+
+| Column | Type | Constraints / Defaults |
+| :--- | :--- | :--- |
+| `id` | `Integer` | Primary key, auto-increment, indexed by primary-key constraint |
+| `full_name` | `String(150)` | Not nullable |
+| `phone_number` | `String(20)` | Not nullable, unique (stored as text to preserve formatting/leading zeros) |
+| `email` | `String(255)` | Nullable (optional), unique |
+| `address` | `Text` | Nullable |
+| `created_at` | `DateTime(timezone=True)` | Not nullable, `server_default=func.now()` |
+| `updated_at` | `DateTime(timezone=True)` | Not nullable, `server_default=func.now()`, `onupdate=func.now()` |
+
 ---
 
 ## Upcoming Phase 2 Implementation
 
-`database.py`, `Base` (`app/db/base.py`), and Alembic (`alembic.ini`, `alembic/env.py`) are now configured. The following remain **not implemented yet** for upcoming commits:
+`database.py`, `Base`, Alembic (`alembic.ini`, `alembic/env.py`), and the `Customer` ORM model (`app/db/models/customer.py`) are now configured. The following remain **not implemented yet** for upcoming commits:
 
-- Concrete SQLAlchemy ORM models (e.g., `Customer`, `Motorcycle`)
-- First Alembic migration revision (`alembic/versions/`)
+- First Alembic migration revision (`alembic/versions/`) and creating the `customers` table in PostgreSQL (Commit 27)
+- Customer Pydantic schemas, services, and API routes

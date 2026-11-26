@@ -4,6 +4,7 @@ from alembic import context
 
 from app.core.database import DATABASE_URL, engine
 from app.db.base import Base
+import app.db.models  # noqa: F401 — register ORM models on Base.metadata
 
 # Alembic Config object providing access to values in alembic.ini.
 config = context.config
@@ -13,8 +14,6 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Shared SQLAlchemy metadata for future 'autogenerate' migration support.
-# Future model modules will be imported before autogenerate runs so their
-# tables are registered on Base.metadata.
 target_metadata = Base.metadata
 
 
