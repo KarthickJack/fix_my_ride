@@ -2,8 +2,8 @@
 
 This directory will contain the **Python + FastAPI** backend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 17).  
-> The isolated Python virtual environment (`.venv`), `requirements.txt`, minimal FastAPI application (`app/main.py`), and organized package structure (`app/api/routes/`, `app/core/`, `app/schemas/`, `app/services/`) are configured. Feature routes, schemas, services, and database connections will be introduced in upcoming commits.
+> **Current Status:** Phase 1 — Foundation (Commit 18).  
+> The isolated Python virtual environment (`.venv`), `requirements.txt`, minimal FastAPI application (`app/main.py`), organized package structure, and separated health check router (`app/api/routes/health.py` exposing `GET /health`) are configured. Feature routes, schemas, services, CORS, and database connections will be introduced in upcoming commits.
 
 ---
 
@@ -116,7 +116,8 @@ backend/
 │   ├── api/
 │   │   ├── __init__.py
 │   │   └── routes/
-│   │       └── __init__.py
+│   │       ├── __init__.py
+│   │       └── health.py
 │   ├── core/
 │   │   └── __init__.py
 │   ├── schemas/
@@ -141,7 +142,31 @@ Keeping all endpoints, settings, validation rules, and business logic inside `ma
 
 ### Why Separating Responsibilities Helps and Why They Are Empty Now
 
-Separating routes, schemas, services, and core settings keeps each layer small, readable, and easy to test or change independently. Right now these folders contain only `__init__.py` markers because Fix-My-Ride is built incrementally—each layer will be populated only in the commits that introduce those features.
+Separating routes, schemas, services, and core settings keeps each layer small, readable, and easy to test or change independently. Right now `core/`, `schemas/`, and `services/` contain only `__init__.py` markers because Fix-My-Ride is built incrementally—each layer will be populated only in the commits that introduce those features.
+
+## 11. Health Check API
+
+### Key Concepts
+
+- **What an API health check is:** A lightweight endpoint (`GET /health`) that reports whether the backend API process is alive and able to respond to HTTP requests.
+- **Why applications need health checks:** Developers, automated monitoring tools, and frontends can ping `/health` to confirm the server started properly without waiting on complex business pages. *(Note: At Commit 18, this is a basic application-level check—it does not test database connectivity yet.)*
+- **What an `APIRouter` is:** A FastAPI mini-router (`APIRouter()`) used to group related endpoints inside separate files (like `app/api/routes/health.py`) instead of putting every route into `main.py`.
+- **Why routes are separated from `main.py`:** Separating routes keeps `main.py` small and focused on wiring the app together, while each feature or utility router lives in its own clean module.
+- **How `include_router()` connects a router:** Calling `app.include_router(health_router)` in `app/main.py` attaches all routes defined on `health.router` to the main FastAPI `app`.
+- **What an HTTP `GET` request does:** Sends a read-only request to the server asking for status data without changing anything on the server.
+
+### Endpoint Details
+
+- **URL:** `GET http://127.0.0.1:8000/health`
+- **Expected Response:**
+
+```json
+{
+  "status": "healthy",
+  "application": "Fix-My-Ride API",
+  "message": "Backend is running successfully"
+}
+```
 
 ---
 
