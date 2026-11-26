@@ -2,8 +2,8 @@
 
 This directory will contain the **Python + FastAPI** backend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 16).  
-> The isolated Python virtual environment (`.venv`), `requirements.txt`, and the minimal FastAPI application (`app/main.py`) with a root `/` endpoint are configured. API feature routes, CORS, authentication, and database connections will be introduced in upcoming commits.
+> **Current Status:** Phase 1 — Foundation (Commit 17).  
+> The isolated Python virtual environment (`.venv`), `requirements.txt`, minimal FastAPI application (`app/main.py`), and organized package structure (`app/api/routes/`, `app/core/`, `app/schemas/`, `app/services/`) are configured. Feature routes, schemas, services, and database connections will be introduced in upcoming commits.
 
 ---
 
@@ -104,6 +104,44 @@ Once started, open `http://127.0.0.1:8000/`, `http://127.0.0.1:8000/docs` (Swagg
 ### Stop the Server
 
 Press `Ctrl + C` in the terminal running Uvicorn to stop the development server cleanly.
+
+## 10. Backend Project Structure
+
+### Directory Layout
+
+```text
+backend/
+├── app/
+│   ├── __init__.py
+│   ├── api/
+│   │   ├── __init__.py
+│   │   └── routes/
+│   │       └── __init__.py
+│   ├── core/
+│   │   └── __init__.py
+│   ├── schemas/
+│   │   └── __init__.py
+│   ├── services/
+│   │   └── __init__.py
+│   └── main.py
+├── requirements.txt
+└── README.md
+```
+
+### Why Backend Applications Need Organized Folders
+
+Keeping all endpoints, settings, validation rules, and business logic inside `main.py` quickly turns one file into thousands of lines as features grow. Organizing `app/` into focused Python packages ensures every developer knows where new backend code belongs.
+
+### Folder Responsibilities and Differences
+
+- **`app/api/routes/` (Routes):** Defines HTTP endpoints (URL paths and HTTP methods like `GET`, `POST`, `PUT`, `DELETE`) for resources such as customers, bookings, and technicians.
+- **`app/schemas/` (Schemas):** Defines data validation and request/response structures so FastAPI checks incoming data and formats JSON responses cleanly.
+- **`app/services/` (Services):** Holds business logic (workshop rules, calculations, coordinating operations) separately from HTTP route handlers.
+- **`app/core/` (Core):** Holds application-wide configuration and shared backend settings (such as environment configuration and security settings).
+
+### Why Separating Responsibilities Helps and Why They Are Empty Now
+
+Separating routes, schemas, services, and core settings keeps each layer small, readable, and easy to test or change independently. Right now these folders contain only `__init__.py` markers because Fix-My-Ride is built incrementally—each layer will be populated only in the commits that introduce those features.
 
 ---
 
