@@ -1,3 +1,4 @@
+import { NavLink, useLocation } from 'react-router-dom';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -11,12 +12,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import './Sidebar.css';
 
 const MENU_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: DashboardIcon, selected: true },
-  { id: 'customers', label: 'Customers', icon: PeopleIcon, selected: false },
-  { id: 'bookings', label: 'Bookings', icon: EventNoteIcon, selected: false },
+  { id: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: DashboardIcon },
+  { id: 'customers', label: 'Customers', path: '/customers', icon: PeopleIcon },
+  { id: 'bookings', label: 'Bookings', path: '/bookings', icon: EventNoteIcon },
 ];
 
 function Sidebar({ isOpen, onClose }) {
+  const { pathname } = useLocation();
+
   return (
     <>
       {isOpen && (
@@ -46,12 +49,17 @@ function Sidebar({ isOpen, onClose }) {
           <List className="app-sidebar-list" disablePadding>
             {MENU_ITEMS.map((item) => {
               const IconComponent = item.icon;
+              const isSelected = pathname === item.path;
+
               return (
                 <ListItem key={item.id} disablePadding className="app-sidebar-item">
                   <ListItemButton
-                    selected={item.selected}
+                    component={NavLink}
+                    to={item.path}
+                    selected={isSelected}
+                    onClick={onClose}
                     className={`app-sidebar-link ${
-                      item.selected ? 'app-sidebar-link-active' : ''
+                      isSelected ? 'app-sidebar-link-active' : ''
                     }`}
                   >
                     <ListItemIcon className="app-sidebar-icon">

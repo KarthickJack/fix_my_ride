@@ -1,20 +1,11 @@
-import MainLayout from './layouts/MainLayout.jsx';
-import './App.css';
+import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes.jsx';
 
 function App() {
   return (
-    <MainLayout>
-      <div className="welcome-page">
-        <section className="welcome-card">
-          <h1 className="welcome-title">Fix-My-Ride</h1>
-          <p className="welcome-subtitle">Motorcycle Service Management System</p>
-          <p className="welcome-message">Welcome to Fix-My-Ride.</p>
-          <p className="welcome-description">
-            Your motorcycle service management platform.
-          </p>
-        </section>
-      </div>
-    </MainLayout>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   );
 }
 

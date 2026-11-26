@@ -2,8 +2,8 @@
 
 This directory contains the **React + Vite (JavaScript)** frontend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 11).  
-> The React + Vite application skeleton, organized `src/` folder structure, global CSS foundation, `MainLayout`, and Material UI-based `Header` and `Sidebar` navigation shell are configured. Future frontend libraries (**Axios**, **React Router**) and feature modules will be added in upcoming commits.
+> **Current Status:** Phase 1 — Foundation (Commit 12).  
+> The React + Vite application skeleton, organized `src/` folder structure, global CSS foundation, `MainLayout`, Material UI-based `Header` and `Sidebar`, and client-side routing (`react-router-dom` via `src/routes/AppRoutes.jsx`) are configured. Future frontend libraries (**Axios**) and actual page modules will be added in upcoming commits.
 
 ---
 
@@ -24,12 +24,13 @@ This directory contains the **React + Vite (JavaScript)** frontend application f
 ## 4. What Each File Does
 
 - `index.html` — The single HTML page served to the browser. Contains `<div id="root"></div>` where React mounts and loads `/src/main.jsx`.
-- `package.json` — Lists project metadata, dependencies (`react`, `react-dom`, `@mui/material`, `@mui/icons-material`, `@emotion/react`, `@emotion/styled`), devDependencies (`vite`, `@vitejs/plugin-react`), and npm scripts (`dev`, `build`, `preview`).
+- `package.json` — Lists project metadata, dependencies (`react`, `react-dom`, `react-router-dom`, `@mui/material`, `@mui/icons-material`, `@emotion/react`, `@emotion/styled`), devDependencies (`vite`, `@vitejs/plugin-react`), and npm scripts (`dev`, `build`, `preview`).
 - `package-lock.json` — Records exact installed package versions so everyone gets identical installs.
 - `vite.config.js` — Vite configuration enabling the official React plugin (`@vitejs/plugin-react`).
 - `public/favicon.svg` — Static icon file served directly at `/favicon.svg`.
 - `src/main.jsx` — The JavaScript entry point that finds `#root` in `index.html` and renders the `<App />` component inside `<StrictMode>`.
-- `src/App.jsx` — The root React component currently displaying the minimal Fix-My-Ride welcome screen.
+- `src/App.jsx` — The root React component wrapping `AppRoutes` inside a single `BrowserRouter`.
+- `src/routes/AppRoutes.jsx` — Route configuration mapping `/`, `/dashboard`, `/customers`, `/bookings`, and `*` to placeholder views wrapped inside `MainLayout` via `Outlet`.
 - `src/App.css` — Component-level styles specific to the root `App` welcome screen, consuming shared CSS variables.
 - `src/index.css` — Global browser defaults (box-sizing, body margin, base font/colors, `#root` minimum height) that imports `src/styles/global.css`.
 - `src/styles/global.css` — Shared `:root` CSS custom properties (colors, typography, spacing, border radius, and shadows).
@@ -37,7 +38,7 @@ This directory contains the **React + Vite (JavaScript)** frontend application f
 - `src/layouts/MainLayout.css` — Responsive flexbox styles specific to `MainLayout`, consuming shared CSS variables.
 - `src/components/Header.jsx` — Reusable top application bar built with Material UI showing the Fix-My-Ride title, brand icon, and mobile sidebar toggle button.
 - `src/components/Header.css` — Component-specific styling for `Header`.
-- `src/components/Sidebar.jsx` — Reusable navigation sidebar built with Material UI displaying static menu items (`Dashboard`, `Customers`, `Bookings`) and mobile drawer behavior.
+- `src/components/Sidebar.jsx` — Reusable navigation sidebar built with Material UI and React Router `NavLink` items (`/dashboard`, `/customers`, `/bookings`) with active route highlighting and mobile drawer behavior.
 - `src/components/Sidebar.css` — Component-specific styling for `Sidebar` and its responsive mobile drawer/backdrop.
 - `src/assets/`, `src/components/`, `src/layouts/`, `src/pages/`, `src/services/`, `src/styles/` — Organized source directories prepared for upcoming application growth (unused directories currently hold `.gitkeep` markers so Git tracks them).
 
@@ -205,7 +206,26 @@ Material UI (`@mui/material` and `@mui/icons-material`) supplies accessible buil
 - **Desktop (`> 768px`):** The header spans the top, the `240px` sidebar stays visible on the left, and main content fills the remaining width.
 - **Mobile (`<= 768px`):** The header remains visible with a menu toggle button, while the sidebar collapses off-screen until opened as an overlay drawer—preventing horizontal overflow.
 
-## 10. How to Install Dependencies
+## 10. Client-Side Routing with React Router DOM
+
+### What Client-Side Routing Means and Why React Needs It
+
+In a traditional multi-page website, clicking a link asks the server for a brand-new HTML file and reloads the entire browser tab. In a React Single Page Application (SPA), **client-side routing** lets JavaScript intercept navigation, update the browser address bar URL, and swap only the matching React components—preserving `Header`, `Sidebar`, and layout state without a full page reload.
+
+### Core React Router DOM Concepts
+
+- **`react-router-dom`:** The routing library that synchronizes the browser URL with the React component tree.
+- **`BrowserRouter`:** Placed once at the top of `App.jsx`, it listens to the browser's History API (`pushState`, Back/Forward buttons) and makes routing context available everywhere inside the app.
+- **`Routes` and `Route`:** `Routes` inspects the current URL and picks the matching `Route` to render (`path="/dashboard"`, `path="/customers"`, `path="/bookings"`, or fallback `path="*"`).
+- **`Navigate`:** Declaratively redirects from one URL to another (for example, `<Route path="/" element={<Navigate to="/dashboard" replace />} />` redirects the root URL `/` straight to `/dashboard`).
+- **`NavLink`:** Used in `Sidebar.jsx` to navigate to `/dashboard`, `/customers`, and `/bookings` without full page reloads while knowing when its route is active so the active menu item is highlighted.
+- **Nested Routes and `Outlet`:** A parent `<Route element={<LayoutWrapper />}>` renders `MainLayout` once around `<Outlet />`. React Router renders whichever child route matches (`/dashboard`, `/customers`, `/bookings`, or `*`) inside `<Outlet />` without duplicating `MainLayout`.
+
+### How URL Changes Update Displayed Components
+
+When a user clicks **Customers** in `Sidebar`, `NavLink` updates the URL to `/customers`. `BrowserRouter` notifies `Routes`, which swaps the `<Outlet />` content inside `MainLayout` from the Dashboard placeholder to the Customers placeholder while keeping `Header` and `Sidebar` mounted.
+
+## 11. How to Install Dependencies
 
 From the `frontend/` directory:
 
@@ -215,7 +235,7 @@ npm install
 
 *(Note: Vite 8 requires a modern Node.js version such as Node 20.19+ or 22.12+. If your default shell uses an older Node version via `nvm`, switch to a supported version first.)*
 
-## 11. How to Start the Development Server
+## 12. How to Start the Development Server
 
 ```bash
 npm run dev
@@ -223,7 +243,7 @@ npm run dev
 
 Vite will print a local URL (typically `http://localhost:5173`) where you can open the app in your browser.
 
-## 12. How to Build the Application
+## 13. How to Build the Application
 
 To generate an optimized production build inside `frontend/dist/`:
 
@@ -231,7 +251,7 @@ To generate an optimized production build inside `frontend/dist/`:
 npm run build
 ```
 
-## 13. How to Preview the Production Build
+## 14. How to Preview the Production Build
 
 To serve and test the built `dist/` files locally:
 
@@ -243,7 +263,6 @@ npm run preview
 
 ## Planned Future Technologies
 
-The following technologies are **not installed yet** and will be introduced in future commits:
+The following technology is **not installed yet** and will be introduced in future commits:
 
 - **Axios** for communicating with the FastAPI backend API
-- **React Router** for multi-page client-side navigation
