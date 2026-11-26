@@ -2,8 +2,8 @@
 
 This directory contains the **React + Vite (JavaScript)** frontend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 05).  
-> Only the minimal React + Vite application skeleton is configured right now. Future frontend libraries (**Material UI**, **Axios**, **React Router**) and feature modules will be added in upcoming commits.
+> **Current Status:** Phase 1 — Foundation (Commit 07).  
+> The minimal React + Vite application skeleton and organized `src/` folder structure (`assets/`, `components/`, `layouts/`, `pages/`, `services/`, `styles/`) are configured. Future frontend libraries (**Material UI**, **Axios**, **React Router**) and feature modules will be added in upcoming commits.
 
 ---
 
@@ -32,8 +32,39 @@ This directory contains the **React + Vite (JavaScript)** frontend application f
 - `src/App.jsx` — The root React component currently displaying the minimal Fix-My-Ride welcome screen.
 - `src/App.css` — Component-level styles for the welcome page layout and card.
 - `src/index.css` — Minimal global CSS rules (box-sizing, body margin, default font, and background color).
+- `src/assets/`, `src/components/`, `src/layouts/`, `src/pages/`, `src/services/`, `src/styles/` — Organized source directories prepared for upcoming application growth (each currently contains a `.gitkeep` marker so Git tracks empty folders).
 
-## 5. How to Install Dependencies
+## 5. Source Folder Organization (`src/`)
+
+### Why We Organize Frontend Code
+
+Keeping all React files directly inside `src/` quickly becomes hard to navigate as features grow. Organizing `src/` into clear, purpose-based folders ensures every developer knows where to place new code and where to find existing files without guessing.
+
+### Folder Responsibilities
+
+- **`src/assets/`:** Static media files imported directly by React components (images, icons, logos, illustrations).
+- **`src/components/`:** Reusable UI building blocks used across multiple screens (such as future `Button`, `InputField`, `StatusBadge`, or `DataTable` components).
+- **`src/layouts/`:** Application-wide structural page shells (such as future `MainLayout` or `DashboardLayout` wrappers).
+- **`src/pages/`:** Individual route-level application pages (such as future `DashboardPage`, `CustomersPage`, or `BookingsPage`).
+- **`src/services/`:** External communication and API logic (such as future Axios setup, customer API requests, and booking API requests).
+- **`src/styles/`:** Shared CSS files and global styling resources as styling grows beyond `index.css` and `App.css`.
+
+### Difference Between `components/`, `layouts/`, and `pages/`
+
+- **Components** are small, reusable UI pieces (like a status badge or form input) that do not represent a whole screen by themselves.
+- **Layouts** define the outer frame shared across screens (such as navigation headers, sidebars, and content wrappers).
+- **Pages** represent full views for a specific screen or route, combining layouts and reusable components to deliver a user workflow.
+
+### Why `services/` Are Separated from UI Components
+
+Separating API communication into `src/services/` keeps React components focused purely on presentation and user interaction. If backend endpoints or HTTP configuration change later, updates happen in one service module rather than across multiple UI files.
+
+### Where Shared Styles and Assets Belong
+
+- **Shared styles** go into `src/styles/` once styles expand beyond the initial `index.css` (global base styles) and `App.css` (root welcome styles).
+- **Imported assets** (processed by Vite when imported in JSX/CSS) belong in `src/assets/`, whereas static files served directly at fixed root paths (like `/favicon.svg`) remain in `public/`.
+
+## 6. How to Install Dependencies
 
 From the `frontend/` directory:
 
@@ -43,7 +74,7 @@ npm install
 
 *(Note: Vite 8 requires a modern Node.js version such as Node 20.19+ or 22.12+. If your default shell uses an older Node version via `nvm`, switch to a supported version first.)*
 
-## 6. How to Start the Development Server
+## 7. How to Start the Development Server
 
 ```bash
 npm run dev
@@ -51,7 +82,7 @@ npm run dev
 
 Vite will print a local URL (typically `http://localhost:5173`) where you can open the app in your browser.
 
-## 7. How to Build the Application
+## 8. How to Build the Application
 
 To generate an optimized production build inside `frontend/dist/`:
 
@@ -59,7 +90,7 @@ To generate an optimized production build inside `frontend/dist/`:
 npm run build
 ```
 
-## 8. How to Preview the Production Build
+## 9. How to Preview the Production Build
 
 To serve and test the built `dist/` files locally:
 
