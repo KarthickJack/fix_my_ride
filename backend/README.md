@@ -2,8 +2,8 @@
 
 This directory will contain the **Python + FastAPI** backend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 2 — Database Foundation (Commit 22).  
-> Phase 1 FastAPI setup and Commit 21 PostgreSQL setup (`fix_my_ride_db`, `fix_my_ride_user`) are complete, and the Python database libraries (`SQLAlchemy`, `psycopg[binary]`, `alembic`) are declared in `requirements.txt` and installed in `.venv`. Database engine/session setup, ORM models, and migrations will be introduced in upcoming Phase 2 commits.
+> **Current Status:** Phase 2 — Database Foundation (Commit 23).  
+> Phase 1 FastAPI setup, PostgreSQL setup (`fix_my_ride_db`, `fix_my_ride_user`), database dependencies (`SQLAlchemy`, `psycopg[binary]`, `alembic`), and the SQLAlchemy database connection layer (`app/core/config.py`, `app/core/database.py`) are configured. SQLAlchemy ORM models and Alembic migrations will be introduced in upcoming Phase 2 commits.
 
 ---
 
@@ -305,11 +305,53 @@ pip check
 deactivate
 ```
 
+## 16. PostgreSQL Connection (`database.py` & `config.py`)
+
+### Key Concepts
+
+- **Why the application needs a database connection:** FastAPI needs an active bridge to PostgreSQL so future routes can store and query customers, motorcycles, service bookings, and invoices persistently.
+- **What SQLAlchemy does:** SQLAlchemy translates Python objects and expressions into SQL queries and manages connection pooling cleanly.
+- **What Psycopg does:** Psycopg 3 is the PostgreSQL driver that handles the low-level TCP communication between SQLAlchemy and PostgreSQL.
+- **What a SQLAlchemy `engine` is:** Created with `create_engine(DATABASE_URL, pool_pre_ping=True)` in `app/core/database.py`, the engine is the central factory managing the pool of database connections. `pool_pre_ping=True` tests idle connections before reusing them.
+- **What a database session is:** A **session** is one short-lived workspace (like a single conversation/transaction with PostgreSQL) used to read or write data during a single API request.
+- **What `SessionLocal` does:** Created with `sessionmaker(autocommit=False, autoflush=False, bind=engine)`, `SessionLocal` is a factory that creates new `Session` objects bound to `engine` on demand.
+- **Why `get_db()` uses `yield` and `finally`:** `get_db()` opens `db = SessionLocal()`, `yield`s it to a FastAPI endpoint, and guarantees `db.close()` runs inside the `finally` block—even if an error occurs—so database connections never leak.
+
+### Database Environment Variables (`backend/.env`)
+
+`app/core/config.py` loads these settings (with `DB_PASSWORD` stored as a `SecretStr` so it is masked in logs):
+
+- `DB_HOST` (default: `localhost`)
+- `DB_PORT` (default: `5432`)
+- `DB_NAME` (default: `fix_my_ride_db`)
+- `DB_USER` (default: `fix_my_ride_user`)
+- `DB_PASSWORD` (set locally inside `backend/.env`)
+
+Copy `backend/.env.example` to `backend/.env` (or edit the existing `backend/.env`) and set your local `DB_PASSWORD` value. **Never commit `.env` or real passwords.**
+
+### Testing the Database Connection
+
+```bash
+cd backend
+source .venv/bin/activate
+python -c "from sqlalchemy import text; from app.core.database import engine;
+with engine.connect() as conn:
+    print(conn.execute(text('SELECT 1')).scalar())"
+```
+
+Expected output when `DB_PASSWORD` is configured and PostgreSQL is running: `1`.
+
+### Common Connection Errors and Troubleshooting
+
+- **Password authentication failed:** Check `DB_USER` and `DB_PASSWORD` in `backend/.env` against the password set for `fix_my_ride_user`.
+- **Connection refused on port `5432`:** Ensure PostgreSQL is running (`sudo systemctl status postgresql` / `pg_isready -h localhost -p 5432`).
+- **Database does not exist:** Confirm `DB_NAME=fix_my_ride_db` exists and is owned by `fix_my_ride_user`.
+
 ---
 
 ## Upcoming Phase 2 Implementation
 
-The database packages above are installed in `.venv`, while the following remain **not configured yet** for upcoming commits:
+`database.py`, `engine`, `SessionLocal`, and `get_db()` are now configured in `app/core/database.py`. The following remain **not implemented yet** for upcoming commits:
 
-- SQLAlchemy `engine`, `SessionLocal`, and `database.py` connection setup (Commit 23)
-- SQLAlchemy ORM models and Alembic migrations configuration
+- SQLAlchemy ORM models (e.g., `Customer`, `Motorcycle`)
+- Alembic `alembic.ini` and database migrations
