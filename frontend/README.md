@@ -2,8 +2,8 @@
 
 This directory contains the **React + Vite (JavaScript)** frontend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 07).  
-> The minimal React + Vite application skeleton and organized `src/` folder structure (`assets/`, `components/`, `layouts/`, `pages/`, `services/`, `styles/`) are configured. Future frontend libraries (**Material UI**, **Axios**, **React Router**) and feature modules will be added in upcoming commits.
+> **Current Status:** Phase 1 — Foundation (Commit 08).  
+> The minimal React + Vite application skeleton, organized `src/` folder structure (`assets/`, `components/`, `layouts/`, `pages/`, `services/`, `styles/`), and clearly separated application entry point (`index.html`, `main.jsx`, `App.jsx`) are verified and configured. Future frontend libraries (**Material UI**, **Axios**, **React Router**) and feature modules will be added in upcoming commits.
 
 ---
 
@@ -64,7 +64,28 @@ Separating API communication into `src/services/` keeps React components focused
 - **Shared styles** go into `src/styles/` once styles expand beyond the initial `index.css` (global base styles) and `App.css` (root welcome styles).
 - **Imported assets** (processed by Vite when imported in JSX/CSS) belong in `src/assets/`, whereas static files served directly at fixed root paths (like `/favicon.svg`) remain in `public/`.
 
-## 6. How to Install Dependencies
+## 6. Application Entry Point and Startup Flow
+
+### How a React Application Starts
+
+1. The browser requests and loads `index.html`.
+2. `index.html` defines an empty `<div id="root"></div>` container and loads `/src/main.jsx` as an ES module.
+3. `src/main.jsx` executes, loads global styles (`./index.css`), locates `#root` in the DOM, and mounts the `<App />` component inside `<StrictMode>` using `createRoot`.
+4. `src/App.jsx` renders the top-level Fix-My-Ride interface inside `#root`.
+
+### Roles of Each Startup File and API
+
+- **`index.html`:** The single HTML shell served to the browser. It sets the page title (`Fix-My-Ride`), provides `<div id="root"></div>`, and loads `/src/main.jsx`.
+- **`src/main.jsx`:** The JavaScript entry point solely responsible for bootstrapping and mounting React into the DOM (no UI layout or business logic).
+- **`createRoot` (from `react-dom/client`):** Attaches a React root controller to `<div id="root"></div>` and renders the React component tree via `.render(...)`.
+- **`React.StrictMode` (`StrictMode` from `react`):** A development-only wrapper that performs extra checks to catch potential issues early without rendering visible DOM elements or affecting production builds.
+- **`src/App.jsx`:** The root React component that defines the top-level UI (currently the Fix-My-Ride welcome screen) and imports component-level styles (`./App.css`).
+
+### How These Files Work Together
+
+`index.html` provides the `#root` anchor and loads `main.jsx`; `main.jsx` initializes React and mounts `<App />` into `#root`; and `App.jsx` supplies the UI rendered to the user.
+
+## 7. How to Install Dependencies
 
 From the `frontend/` directory:
 
@@ -74,7 +95,7 @@ npm install
 
 *(Note: Vite 8 requires a modern Node.js version such as Node 20.19+ or 22.12+. If your default shell uses an older Node version via `nvm`, switch to a supported version first.)*
 
-## 7. How to Start the Development Server
+## 8. How to Start the Development Server
 
 ```bash
 npm run dev
@@ -82,7 +103,7 @@ npm run dev
 
 Vite will print a local URL (typically `http://localhost:5173`) where you can open the app in your browser.
 
-## 8. How to Build the Application
+## 9. How to Build the Application
 
 To generate an optimized production build inside `frontend/dist/`:
 
@@ -90,7 +111,7 @@ To generate an optimized production build inside `frontend/dist/`:
 npm run build
 ```
 
-## 9. How to Preview the Production Build
+## 10. How to Preview the Production Build
 
 To serve and test the built `dist/` files locally:
 
