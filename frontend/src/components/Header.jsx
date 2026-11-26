@@ -22,6 +22,7 @@ function Header({ isSidebarOpen, onToggleSidebar }) {
               color="inherit"
               aria-label="Toggle navigation menu"
               aria-expanded={isSidebarOpen}
+              aria-controls="primary-sidebar"
               onClick={onToggleSidebar}
             >
               <MenuIcon />

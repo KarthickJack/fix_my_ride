@@ -31,6 +31,7 @@ function Sidebar({ isOpen, onClose }) {
       )}
 
       <aside
+        id="primary-sidebar"
         className={`app-sidebar ${isOpen ? 'app-sidebar-open' : ''}`}
         aria-label="Primary navigation"
       >

@@ -2,8 +2,8 @@
 
 This directory contains the **React + Vite (JavaScript)** frontend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 13).  
-> The React + Vite application skeleton, organized `src/` folder structure, global CSS foundation, `MainLayout`, Material UI-based `Header` and `Sidebar`, client-side routing (`react-router-dom`), and initial application pages (`DashboardPage`, `CustomersPage`, `BookingsPage`) are configured. Future frontend libraries (**Axios**) and actual business features will be added in upcoming commits.
+> **Current Status:** Phase 1 — Foundation (Commit 14).  
+> The React + Vite application skeleton, organized `src/` folder structure, global CSS foundation, `MainLayout`, Material UI-based `Header` and `Sidebar`, client-side routing (`react-router-dom`), initial application pages (`DashboardPage`, `CustomersPage`, `BookingsPage`), and verified sidebar navigation integration are configured. Future frontend libraries (**Axios**) and actual business features will be added in upcoming commits.
 
 ---
 
@@ -249,7 +249,27 @@ A **page component** represents a complete screen linked to a specific URL route
 
 `src/routes/AppRoutes.jsx` imports `DashboardPage`, `CustomersPage`, and `BookingsPage` and maps `/dashboard`, `/customers`, and `/bookings` inside `LayoutWrapper` (`MainLayout` + `Outlet`). Each page imports its own stylesheet (`DashboardPage.css`, `CustomersPage.css`, `BookingsPage.css`) powered by `global.css` design variables.
 
-## 12. How to Install Dependencies
+## 12. Sidebar Navigation Integration & Accessibility
+
+### How Sidebar Connects to React Router and `NavLink`
+
+Inside `src/components/Sidebar.jsx`, each MUI `ListItemButton` uses `component={NavLink}` with `to="/dashboard"`, `to="/customers"`, or `to="/bookings"`. `NavLink` listens to `BrowserRouter` and marks the matching route as active (`aria-current="page"` and `.active`), while `useLocation().pathname === item.path` applies MUI's `selected` state and `.app-sidebar-link-active` styling.
+
+### How Route Changes Update the Displayed Page
+
+Clicking a sidebar item updates the browser URL via the History API without reloading the page. `Routes` inside `AppRoutes.jsx` matches the new path and swaps the page rendered inside `MainLayout`'s `<Outlet />` (`DashboardPage`, `CustomersPage`, or `BookingsPage`).
+
+### Responsive Sidebar Behavior
+
+- **Desktop (`> 768px`):** The `240px` sidebar stays visible on the left beside `main.main-layout-content`.
+- **Mobile (`<= 768px`):** Clicking the `Header` menu toggle (`aria-controls="primary-sidebar"`, `aria-expanded={isSidebarOpen}`) opens the drawer; selecting any `NavLink` item triggers `onClose` so the mobile drawer closes right after navigating.
+
+### Testing Browser Back/Forward and Navigation Accessibility
+
+1. Navigate across **Dashboard** → **Customers** → **Bookings**, then click the browser **Back** and **Forward** buttons to confirm URLs, page views, and active sidebar highlights stay synchronized.
+2. Press `Tab` to verify clear `:focus-visible` outlines on the header toggle button, sidebar links, and mobile close button, and confirm closed mobile drawer links remain hidden from keyboard focus (`visibility: hidden`).
+
+## 13. How to Install Dependencies
 
 From the `frontend/` directory:
 
@@ -259,7 +279,7 @@ npm install
 
 *(Note: Vite 8 requires a modern Node.js version such as Node 20.19+ or 22.12+. If your default shell uses an older Node version via `nvm`, switch to a supported version first.)*
 
-## 13. How to Start the Development Server
+## 14. How to Start the Development Server
 
 ```bash
 npm run dev
@@ -267,7 +287,7 @@ npm run dev
 
 Vite will print a local URL (typically `http://localhost:5173`) where you can open the app in your browser.
 
-## 14. How to Build the Application
+## 15. How to Build the Application
 
 To generate an optimized production build inside `frontend/dist/`:
 
@@ -275,7 +295,7 @@ To generate an optimized production build inside `frontend/dist/`:
 npm run build
 ```
 
-## 15. How to Preview the Production Build
+## 16. How to Preview the Production Build
 
 To serve and test the built `dist/` files locally:
 
