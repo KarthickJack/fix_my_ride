@@ -2,8 +2,8 @@
 
 This directory will contain the **Python + FastAPI** backend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 2 — Database Foundation (Commit 21).  
-> Phase 1 FastAPI setup (`app/main.py`, `GET /health`, Pydantic Settings, CORS) is complete, and the local PostgreSQL database (`fix_my_ride_db`) and application role (`fix_my_ride_user`) are set up. Python database drivers, SQLAlchemy ORM, and database connections will be introduced in upcoming Phase 2 commits.
+> **Current Status:** Phase 2 — Database Foundation (Commit 22).  
+> Phase 1 FastAPI setup and Commit 21 PostgreSQL setup (`fix_my_ride_db`, `fix_my_ride_user`) are complete, and the Python database libraries (`SQLAlchemy`, `psycopg[binary]`, `alembic`) are declared in `requirements.txt` and installed in `.venv`. Database engine/session setup, ORM models, and migrations will be introduced in upcoming Phase 2 commits.
 
 ---
 
@@ -275,11 +275,41 @@ SELECT version();
 
 Use `\q` to exit the PostgreSQL shell cleanly.
 
+## 15. Database Dependencies
+
+`backend/requirements.txt` now includes the three database libraries needed for upcoming Phase 2 commits:
+
+- **`SQLAlchemy>=2.0,<3.0`:** Python Object-Relational Mapper (ORM) that lets Python code define tables as classes and read/write PostgreSQL records cleanly using Python objects and expressions.
+- **`psycopg[binary]>=3.2,<4.0`:** Modern PostgreSQL database driver (Psycopg 3) that handles the low-level network communication between Python/SQLAlchemy and the PostgreSQL server. The `[binary]` extra includes precompiled binaries for easy local development without needing extra system C build headers.
+- **`alembic>=1.14,<2.0`:** Schema migration tool built for SQLAlchemy that tracks versioned database structure changes (like adding new tables or columns) over time.
+
+### Why These Libraries Are Separate
+
+Each library has a focused job: **SQLAlchemy** maps Python objects and queries, **Psycopg** speaks the PostgreSQL wire protocol, and **Alembic** tracks schema version history. Keeping them separate means clean boundaries and standard Python tooling at every layer.
+
+### Installing and Verifying Packages
+
+Always activate `.venv` before installing or verifying packages, and `deactivate` when done:
+
+```bash
+cd backend
+
+source .venv/bin/activate
+
+pip install -r requirements.txt
+
+pip list
+
+pip check
+
+deactivate
+```
+
 ---
 
-## Planned Future Technologies
+## Upcoming Phase 2 Implementation
 
-The following technologies are **not installed or configured yet** and will be introduced in upcoming Phase 2 commits:
+The database packages above are installed in `.venv`, while the following remain **not configured yet** for upcoming commits:
 
-- **SQLAlchemy** for Object-Relational Mapping (ORM)
-- **PostgreSQL Python driver** and database connection setup in FastAPI
+- SQLAlchemy `engine`, `SessionLocal`, and `database.py` connection setup (Commit 23)
+- SQLAlchemy ORM models and Alembic migrations configuration
