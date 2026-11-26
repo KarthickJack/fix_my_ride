@@ -2,8 +2,8 @@
 
 This directory will contain the **Python + FastAPI** backend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 2 — Database Foundation (Commit 27).  
-> Phase 1 FastAPI setup, PostgreSQL setup (`fix_my_ride_db`, `fix_my_ride_user`), SQLAlchemy connection (`app/core/database.py`), shared `Base`, Alembic configuration, `Customer` ORM model, and the initial Alembic migration (`402f1c589c46_create_customer_table.py`) creating the `customers` table in PostgreSQL are complete. Customer Pydantic schemas, services, and API routes will be introduced in upcoming commits.
+> **Current Status:** Phase 2 — Database Foundation (Commit 28).  
+> Phase 1 FastAPI setup, PostgreSQL setup (`fix_my_ride_db`, `fix_my_ride_user`), SQLAlchemy connection, `Customer` ORM model, initial Alembic migration creating the `customers` table, and Pydantic Customer schemas (`app/schemas/customer.py`) are configured. Customer service functions and API routes will be introduced in upcoming commits.
 
 ---
 
@@ -422,11 +422,19 @@ psql -h localhost -p 5432 -U fix_my_ride_user -d fix_my_ride_db -W
 
 Inside `psql`, run `\dt` to list tables (`customers`, `alembic_version`) and `\d customers` to inspect columns and constraints.
 
+## 20. Customer Pydantic Schemas
+
+Pydantic 2.x data validation and serialization schemas live in `backend/app/schemas/customer.py` (exported via `backend/app/schemas/__init__.py`) and rely on `email-validator` for `EmailStr` validation:
+
+- **`CustomerBase`:** Shared fields (`full_name` max 150, `phone_number` max 20, optional `email` `EmailStr` max 255, optional `address`).
+- **`CustomerCreate`:** Inherits `CustomerBase` for incoming customer creation payloads (excludes `id`, `created_at`, `updated_at`).
+- **`CustomerUpdate`:** Makes all four editable fields optional using the same length constraints so partial updates (one or more fields) work without allowing `id` or timestamp changes.
+- **`CustomerResponse`:** Inherits `CustomerBase`, adds `id`, `created_at`, and `updated_at`, and enables `model_config = ConfigDict(from_attributes=True)` so responses can be built directly from SQLAlchemy `Customer` ORM instances.
+
 ---
 
 ## Upcoming Phase 2 Implementation
 
-The `customers` table is now created in PostgreSQL via Alembic revision `402f1c589c46`. The following remain **not implemented yet** for upcoming commits:
+The `customers` table and Pydantic Customer schemas are now ready. The following remain **not implemented yet** for upcoming commits:
 
-- Customer Pydantic schemas (`app/schemas/`)
 - Customer service functions (`app/services/`) and API routes (`app/api/routes/`)
