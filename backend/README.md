@@ -2,8 +2,8 @@
 
 This directory will contain the **Python + FastAPI** backend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 18).  
-> The isolated Python virtual environment (`.venv`), `requirements.txt`, minimal FastAPI application (`app/main.py`), organized package structure, and separated health check router (`app/api/routes/health.py` exposing `GET /health`) are configured. Feature routes, schemas, services, CORS, and database connections will be introduced in upcoming commits.
+> **Current Status:** Phase 1 — Foundation (Commit 19).  
+> The Python virtual environment (`.venv`), `requirements.txt`, FastAPI application (`app/main.py`), health check router (`GET /health`), Pydantic Settings configuration (`app/core/config.py`), `.env.example`, and CORS middleware are configured. Database connections, authentication, and frontend Axios integration will be introduced in upcoming commits.
 
 ---
 
@@ -119,12 +119,14 @@ backend/
 │   │       ├── __init__.py
 │   │       └── health.py
 │   ├── core/
-│   │   └── __init__.py
+│   │   ├── __init__.py
+│   │   └── config.py
 │   ├── schemas/
 │   │   └── __init__.py
 │   ├── services/
 │   │   └── __init__.py
 │   └── main.py
+├── .env.example
 ├── requirements.txt
 └── README.md
 ```
@@ -142,7 +144,7 @@ Keeping all endpoints, settings, validation rules, and business logic inside `ma
 
 ### Why Separating Responsibilities Helps and Why They Are Empty Now
 
-Separating routes, schemas, services, and core settings keeps each layer small, readable, and easy to test or change independently. Right now `core/`, `schemas/`, and `services/` contain only `__init__.py` markers because Fix-My-Ride is built incrementally—each layer will be populated only in the commits that introduce those features.
+Separating routes, schemas, services, and core settings keeps each layer small, readable, and easy to test or change independently. Right now `schemas/` and `services/` contain only `__init__.py` markers because Fix-My-Ride is built incrementally—each layer will be populated only in the commits that introduce those features.
 
 ## 11. Health Check API
 
@@ -167,6 +169,46 @@ Separating routes, schemas, services, and core settings keeps each layer small, 
   "message": "Backend is running successfully"
 }
 ```
+
+## 12. Environment Variables & Configuration
+
+### Key Concepts
+
+- **What environment variables are:** Named configuration values (like `FRONTEND_URL=http://localhost:5173`) supplied outside the Python source code so different machines or environments can use different values without editing code.
+- **Why configuration should be separate from code:** Keeping URLs, database credentials, and secrets out of `.py` files prevents accidentally leaking sensitive settings and lets you change environments cleanly.
+- **What `.env` does:** `backend/.env` stores local environment settings for your machine. It is ignored by `.gitignore` and **must never be committed** to Git.
+- **What `.env.example` does:** `backend/.env.example` is a safe template committed to Git listing required variable names and safe placeholder/default values.
+- **How Pydantic Settings reads configuration:** `backend/app/core/config.py` defines `Settings(BaseSettings)` with `SettingsConfigDict` pointing to `backend/.env` using an absolute path derived from `config.py`, loading `FRONTEND_URL` automatically regardless of which folder you start Uvicorn from.
+
+### First-Time Environment Setup
+
+```bash
+cd backend
+cp .env.example .env
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+## 13. CORS (Cross-Origin Resource Sharing)
+
+### What CORS Means and What an Origin Is
+
+**CORS** (*Cross-Origin Resource Sharing*) is a browser security mechanism controlling whether web pages running on one **origin** can read responses from a backend server on a different origin.
+
+A browser **origin** is made of three parts:
+1. **Protocol** (`http` vs `https`)
+2. **Hostname** (`localhost` vs `127.0.0.1`)
+3. **Port** (`5173` vs `8000`)
+
+Because the React + Vite frontend runs at `http://localhost:5173` and the FastAPI backend runs at `http://127.0.0.1:8000`, browsers treat them as **different origins** and block frontend API calls unless the backend explicitly permits `http://localhost:5173`.
+
+### How `CORSMiddleware` Is Configured in `app/main.py`
+
+- **`allow_origins=[settings.FRONTEND_URL]`:** Permits requests coming from the configured frontend URL (`http://localhost:5173`).
+- **`allow_methods=["*"]`:** Allows HTTP methods (`GET`, `POST`, `PUT`, `DELETE`, `OPTIONS`, etc.) for upcoming API communication.
+- **`allow_headers=["*"]`:** Allows standard and custom HTTP request headers (such as `Content-Type`).
+- **`allow_credentials=False`:** Keeps cookie/credential sharing disabled because authentication is not implemented yet.
 
 ---
 
