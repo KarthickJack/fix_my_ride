@@ -1,20 +1,28 @@
+import { useState } from 'react';
+import Header from '../components/Header.jsx';
+import Sidebar from '../components/Sidebar.jsx';
 import './MainLayout.css';
 
 function MainLayout({ children }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const handleToggleSidebar = () => {
+    setIsSidebarOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleCloseSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
   return (
     <div className="main-layout">
-      <header className="main-layout-header">
-        <span className="main-layout-placeholder-label">
-          Header Placeholder
-        </span>
-      </header>
+      <Header
+        isSidebarOpen={isSidebarOpen}
+        onToggleSidebar={handleToggleSidebar}
+      />
 
       <div className="main-layout-body">
-        <aside className="main-layout-sidebar" aria-label="Sidebar placeholder">
-          <span className="main-layout-placeholder-label">
-            Sidebar Placeholder
-          </span>
-        </aside>
+        <Sidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
 
         <main className="main-layout-content">{children}</main>
       </div>

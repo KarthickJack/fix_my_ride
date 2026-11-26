@@ -2,8 +2,8 @@
 
 This directory contains the **React + Vite (JavaScript)** frontend application for **Fix-My-Ride**, a Motorcycle Service Management System.
 
-> **Current Status:** Phase 1 — Foundation (Commit 10).  
-> The minimal React + Vite application skeleton, organized `src/` folder structure, verified application entry point, global CSS foundation (`src/styles/global.css`, `src/index.css`), and foundational `MainLayout` (`src/layouts/MainLayout.jsx`, `src/layouts/MainLayout.css`) are configured. Future frontend libraries (**Material UI**, **Axios**, **React Router**) and feature modules will be added in upcoming commits.
+> **Current Status:** Phase 1 — Foundation (Commit 11).  
+> The React + Vite application skeleton, organized `src/` folder structure, global CSS foundation, `MainLayout`, and Material UI-based `Header` and `Sidebar` navigation shell are configured. Future frontend libraries (**Axios**, **React Router**) and feature modules will be added in upcoming commits.
 
 ---
 
@@ -24,7 +24,7 @@ This directory contains the **React + Vite (JavaScript)** frontend application f
 ## 4. What Each File Does
 
 - `index.html` — The single HTML page served to the browser. Contains `<div id="root"></div>` where React mounts and loads `/src/main.jsx`.
-- `package.json` — Lists project metadata, dependencies (`react`, `react-dom`), devDependencies (`vite`, `@vitejs/plugin-react`), and npm scripts (`dev`, `build`, `preview`).
+- `package.json` — Lists project metadata, dependencies (`react`, `react-dom`, `@mui/material`, `@mui/icons-material`, `@emotion/react`, `@emotion/styled`), devDependencies (`vite`, `@vitejs/plugin-react`), and npm scripts (`dev`, `build`, `preview`).
 - `package-lock.json` — Records exact installed package versions so everyone gets identical installs.
 - `vite.config.js` — Vite configuration enabling the official React plugin (`@vitejs/plugin-react`).
 - `public/favicon.svg` — Static icon file served directly at `/favicon.svg`.
@@ -33,8 +33,12 @@ This directory contains the **React + Vite (JavaScript)** frontend application f
 - `src/App.css` — Component-level styles specific to the root `App` welcome screen, consuming shared CSS variables.
 - `src/index.css` — Global browser defaults (box-sizing, body margin, base font/colors, `#root` minimum height) that imports `src/styles/global.css`.
 - `src/styles/global.css` — Shared `:root` CSS custom properties (colors, typography, spacing, border radius, and shadows).
-- `src/layouts/MainLayout.jsx` — Reusable structural shell providing placeholder header/sidebar regions and a `{children}` main content area.
+- `src/layouts/MainLayout.jsx` — Reusable structural shell managing sidebar open/close state and composing `Header`, `Sidebar`, and the `{children}` main content area.
 - `src/layouts/MainLayout.css` — Responsive flexbox styles specific to `MainLayout`, consuming shared CSS variables.
+- `src/components/Header.jsx` — Reusable top application bar built with Material UI showing the Fix-My-Ride title, brand icon, and mobile sidebar toggle button.
+- `src/components/Header.css` — Component-specific styling for `Header`.
+- `src/components/Sidebar.jsx` — Reusable navigation sidebar built with Material UI displaying static menu items (`Dashboard`, `Customers`, `Bookings`) and mobile drawer behavior.
+- `src/components/Sidebar.css` — Component-specific styling for `Sidebar` and its responsive mobile drawer/backdrop.
 - `src/assets/`, `src/components/`, `src/layouts/`, `src/pages/`, `src/services/`, `src/styles/` — Organized source directories prepared for upcoming application growth (unused directories currently hold `.gitkeep` markers so Git tracks them).
 
 ## 5. Source Folder Organization (`src/`)
@@ -172,7 +176,36 @@ function MainLayout({ children }) {
 
 Keeping `MainLayout.css` next to `MainLayout.jsx` separates structural page-shell styling (flex layout, header/sidebar dimensions, responsive breakpoints) from `global.css` tokens and page/component styles like `App.css`.
 
-## 9. How to Install Dependencies
+## 9. Header, Sidebar, and Responsive Navigation
+
+### What `Header` and `Sidebar` Are
+
+- **Header (`src/components/Header.jsx`):** The top bar that stays visible across the application, displaying the **Fix-My-Ride** brand identity/icon and a mobile menu toggle button.
+- **Sidebar (`src/components/Sidebar.jsx`):** The side navigation panel displaying top-level sections (`Dashboard`, `Customers`, `Bookings`) with icons and clear active-item highlighting. *(In Commit 11, these items are static visual placeholders—routing is added in Commit 12.)*
+
+### Why Reusable Components Are Useful
+
+Separating `Header` and `Sidebar` into `src/components/` keeps `MainLayout.jsx` clean and modular. Instead of crowding one file with AppBar, icon, and list markup, each component owns one clear job.
+
+### How Material UI Components Are Used
+
+Material UI (`@mui/material` and `@mui/icons-material`) supplies accessible building blocks (`AppBar`, `Toolbar`, `IconButton`, `Typography`, `List`, `ListItemButton`, `ListItemIcon`, `ListItemText`) and standard vector icons (`MenuIcon`, `TwoWheelerIcon`, `DashboardIcon`, `PeopleIcon`, `EventNoteIcon`, `CloseIcon`), styled alongside our `global.css` tokens in `Header.css` and `Sidebar.css`.
+
+### How Props Communicate Between Components and How Sidebar State Works
+
+`MainLayout` owns a single boolean state `isSidebarOpen` (defaulting to `false`) via `useState(false)`:
+
+- `MainLayout` passes `isSidebarOpen` and `onToggleSidebar` to `Header`. Clicking the menu button triggers `onToggleSidebar`, toggling `isSidebarOpen`.
+- `MainLayout` passes `isOpen={isSidebarOpen}` and `onClose={handleCloseSidebar}` to `Sidebar`. On mobile screens, `Sidebar` slides open when `isOpen` is `true` and closes when the backdrop or close button triggers `onClose`.
+
+### What Responsive Design Means
+
+**Responsive design** ensures the interface adapts smoothly to different screen widths:
+
+- **Desktop (`> 768px`):** The header spans the top, the `240px` sidebar stays visible on the left, and main content fills the remaining width.
+- **Mobile (`<= 768px`):** The header remains visible with a menu toggle button, while the sidebar collapses off-screen until opened as an overlay drawer—preventing horizontal overflow.
+
+## 10. How to Install Dependencies
 
 From the `frontend/` directory:
 
@@ -182,7 +215,7 @@ npm install
 
 *(Note: Vite 8 requires a modern Node.js version such as Node 20.19+ or 22.12+. If your default shell uses an older Node version via `nvm`, switch to a supported version first.)*
 
-## 10. How to Start the Development Server
+## 11. How to Start the Development Server
 
 ```bash
 npm run dev
@@ -190,7 +223,7 @@ npm run dev
 
 Vite will print a local URL (typically `http://localhost:5173`) where you can open the app in your browser.
 
-## 11. How to Build the Application
+## 12. How to Build the Application
 
 To generate an optimized production build inside `frontend/dist/`:
 
@@ -198,7 +231,7 @@ To generate an optimized production build inside `frontend/dist/`:
 npm run build
 ```
 
-## 12. How to Preview the Production Build
+## 13. How to Preview the Production Build
 
 To serve and test the built `dist/` files locally:
 
@@ -212,6 +245,5 @@ npm run preview
 
 The following technologies are **not installed yet** and will be introduced in future commits:
 
-- **Material UI (MUI)** for pre-built UI components
 - **Axios** for communicating with the FastAPI backend API
 - **React Router** for multi-page client-side navigation
